@@ -1,0 +1,8 @@
+/home/tim/sawyer_ws/src/documentation/build/linux/debug/bundle/documentation
+/home/tim/sawyer_ws/src/documentation/build/linux/debug/bundle/data/icudtl.dat
+/home/tim/sawyer_ws/src/documentation/build/linux/debug/bundle/data/flutter_assets/AssetManifest.json
+/home/tim/sawyer_ws/src/documentation/build/linux/debug/bundle/data/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf
+/home/tim/sawyer_ws/src/documentation/build/linux/debug/bundle/data/flutter_assets/fonts/MaterialIcons-Regular.ttf
+/home/tim/sawyer_ws/src/documentation/build/linux/debug/bundle/data/flutter_assets/FontManifest.json
+/home/tim/sawyer_ws/src/documentation/build/linux/debug/bundle/data/flutter_assets/LICENSE
+/home/tim/sawyer_ws/src/documentation/build/linux/debug/bundle/data/flutter_assets/kernel_blob.bin
