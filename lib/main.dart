@@ -52,24 +52,14 @@ class Documents extends ChangeNotifier {
     init();
   }
   void init() async {
-    if (kIsWeb) {
-      final resp = await http.get(url + 'index.json');
-      final files = (json.decode(resp.body) as List<dynamic>).cast<String>();
-      await Future.wait(files.sortedBy((k) => k.length).map((k) => addDoc(k)));
-      // final Map<String, dynamic> manifestMap = json.decode(manifest);
-      // await Future.wait(manifestMap.keys
-      //     .where((String key) => key.contains(ext))
-      //     .map((k) => k.substring(5))
-      //     .sortedBy((k) => k.length)
-      //     .map((k) => addDoc(k)));
-    } else {
-      final files = await Directory(projectLoc)
-          .list(recursive: true)
-          .where((entity) => entity.path.contains(ext))
-          .map((e) => e.path.split(projectLoc)[1])
-          .toList();
-      await Future.wait(files.sortedBy((k) => k.length).map((k) => addDoc(k)));
+    final index = await getFile('index.json');
+    final files = (json.decode(index) as List<dynamic>)
+        .cast<String>()
+        .sortedBy((k) => k.length);
+    for (final file in files) {
+      await addDoc(file);
     }
+
     initialized.complete();
     notifyListeners();
   }
