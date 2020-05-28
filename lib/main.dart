@@ -2,61 +2,152 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dartx/dartx.dart';
-import 'package:zefyr/zefyr.dart';
-import 'package:quill_delta/quill_delta.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:path/path.dart' as path;
 
-final docs = FutureProvider((_) async {
-  final manifest = await rootBundle.loadString('AssetManifest.json');
-  final docs = Documents(manifest);
-  await docs.initialized.future;
-  return docs;
-});
+final ChangeNotifierProvider<Documents> docs =
+    ChangeNotifierProvider<Documents>((_) => Documents());
 
-class Documents {
+const String ext = '.md';
+final editingProvider = ChangeNotifierProvider((ref) => EditingState(ref));
+
+class EditingState extends ChangeNotifier {
+  bool _editing = false;
+  bool get editing => _editing;
+  set editing(bool value) {
+    _editing = value;
+    notifyListeners();
+  }
+
+  void Function() _save;
+  set save(void Function() s) {
+    _save = () {
+      s();
+      notifyListeners();
+    };
+  }
+
+  void Function() get save => _save;
+
+  ProviderReference ref;
+  EditingState(this.ref);
+}
+
+class Documents extends ChangeNotifier {
   Map<String, Doc> _pages = {};
   Map<String, Doc> _rootPages = {};
-  final String manifest;
   final initialized = Completer<bool>();
-  Documents(this.manifest) {
+  final url = kReleaseMode
+      ? 'https://byu_sawyer_docs.codemagic.app/docs/'
+      : 'http://localhost:8080/docs/';
+  Documents() {
     init();
   }
   void init() async {
-    final Map<String, dynamic> manifestMap = json.decode(manifest);
-    await Future.wait(manifestMap.keys
-        .where((String key) => key.contains('.md'))
-        .map((k) => k.substring(5))
-        .sortedBy((k) => k.length)
-        .map((k) => addDoc(k)));
+    if (kIsWeb) {
+      final resp = await http.get(url + 'index.json');
+      final files = (json.decode(resp.body) as List<dynamic>).cast<String>();
+      await Future.wait(files.sortedBy((k) => k.length).map((k) => addDoc(k)));
+      // final Map<String, dynamic> manifestMap = json.decode(manifest);
+      // await Future.wait(manifestMap.keys
+      //     .where((String key) => key.contains(ext))
+      //     .map((k) => k.substring(5))
+      //     .sortedBy((k) => k.length)
+      //     .map((k) => addDoc(k)));
+    } else {
+      final files = await Directory(projectLoc)
+          .list(recursive: true)
+          .where((entity) => entity.path.contains(ext))
+          .map((e) => e.path.split(projectLoc)[1])
+          .toList();
+      await Future.wait(files.sortedBy((k) => k.length).map((k) => addDoc(k)));
+    }
     initialized.complete();
+    notifyListeners();
   }
 
-  Future<void> addDoc(String path) async {
-    final hasParent = path.contains('/');
-    final parent =
-        hasParent ? path.substring(0, path.lastIndexOf('/')) + '.md' : null;
-    final name = hasParent ? path.substring(path.lastIndexOf('/') + 1) : path;
-    final formattedName = name.replaceAll('.md', '').capitalize();
-    _pages[path] = Doc(
-        path, formattedName, [], await rootBundle.loadString('docs/' + path));
+  Future<String> getFile(String p) async {
+    if (!kIsWeb) return await File(path.join(projectLoc, p)).readAsString();
+    return (await http.get(url + p)).body;
+  }
+
+  Future<void> addDoc(String p) async {
+    final hasParent = p.contains('/');
+    final parent = hasParent ? p.substring(0, p.lastIndexOf('/')) + ext : null;
+    final name = hasParent ? p.substring(p.lastIndexOf('/') + 1) : p;
+    final formattedName = name
+        .replaceAll(ext, '')
+        .split('_')
+        .map((s) => s.capitalize())
+        .join(' ');
+    _pages[p] = Doc(p, formattedName, [], await getFile(p));
     if (hasParent) {
       if (_pages[parent] == null) {
         print('Problem with parent $parent');
       }
-      _pages[parent].children.add(path);
+      _pages[parent].children.add(p);
     } else {
-      _rootPages[path] = _pages[path];
+      _rootPages[p] = _pages[p];
     }
   }
 
   Map<String, Doc> get pages => _pages;
   Map<String, Doc> get rootPages => _rootPages;
+  String titleToFileName(String title) {
+    return title.split(' ').map((s) => s.toLowerCase()).join('_') + ext;
+  }
+
+  String get projectLoc => path.join(
+      Platform.environment['HOME'], 'sawyer_ws/src/documentation/docs/');
+
+  Future<void> savePage(
+      EditingState state, Doc page, String title, String contents) async {
+    final newTitleFileName = titleToFileName(title);
+    if (title != page.name) {
+      final f = File(path.join(projectLoc, page.path));
+      await f.delete();
+      final children =
+          Directory(path.join(projectLoc, page.path).split(ext)[0]);
+      if (await children.exists()) {
+        await children
+            .rename(path.join(projectLoc, newTitleFileName.split(ext)[0]));
+      }
+      pages.remove(page.path);
+    }
+    final hasParent = page.path.contains('/');
+    final parent =
+        hasParent ? page.path.substring(0, page.path.lastIndexOf('/')) : null;
+    final localPath =
+        hasParent ? path.join(parent, newTitleFileName) : newTitleFileName;
+    final newPath = path.join(projectLoc, localPath);
+    pages[localPath] = Doc(localPath, title, page.children, contents);
+    final file = File(newPath);
+    // And show a snack bar on success.
+    if (!await file.exists()) {
+      await file.create();
+    }
+    await file.writeAsString(contents);
+    notifyListeners();
+  }
+
+  Future<void> createPage(Doc parent) async {
+    final localPath = path.join(parent.path.split(ext)[0], 'new_page.md');
+    final file = File(path.join(Platform.environment['HOME'],
+        'sawyer_ws/src/documentation/docs/', localPath));
+    // And show a snack bar on success.
+    await file.create();
+    await file.writeAsString('');
+    pages[localPath] = Doc(localPath, 'New Page', [], '');
+    notifyListeners();
+  }
 }
 
 class Doc {
@@ -93,23 +184,40 @@ class MyApp extends StatelessWidget {
 class HomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final pages = useProvider(docs)
-        .maybeWhen(data: (d) => d.rootPages, orElse: () => <String, Doc>{});
+    final editing = useProvider(editingProvider);
+    final pages = useProvider(docs).rootPages;
     return Scaffold(
-        body: pages.length < 2
-            ? Center(child: CircularProgressIndicator())
-            : NavigationInset(pages));
+      body: pages.length < 2
+          ? Center(child: CircularProgressIndicator())
+          : NavigationInset(pages),
+      floatingActionButton: !kIsWeb
+          ? Builder(
+              builder: (context) {
+                return editing.editing
+                    ? FloatingActionButton(
+                        child: Icon(Icons.save),
+                        onPressed: () => editing.save(),
+                      )
+                    : FloatingActionButton(
+                        child: Icon(Icons.edit),
+                        onPressed: () => editing.editing = true);
+              },
+            )
+          : null,
+    );
   }
 }
 
 class NavigationInset extends HookWidget {
   final Map<String, Doc> pages;
   final Doc parent;
-  NavigationInset(this.pages, {this.parent});
+  NavigationInset(this.pages, {this.parent}) : super(key: ObjectKey(parent));
 
   @override
   Widget build(BuildContext context) {
     final page = useState(0);
+    final pagesState = useProvider(docs);
+    final editing = useProvider(editingProvider);
     final destinations = pages.keys
         .map((p) => WikiDestination(pages[p].name, pages[p]))
         .toList();
@@ -124,6 +232,9 @@ class NavigationInset extends HookWidget {
     if (destinations.length == 1) {
       destinations.add(WikiDestination('', null));
     }
+    if (editing.editing) {
+      destinations.add(WikiDestination('Add', null, true));
+    }
     final selectedDestination = destinations[page.value];
     final selectedPage = selectedDestination.page ?? pages.values.toList()[0];
     return Row(
@@ -132,7 +243,12 @@ class NavigationInset extends HookWidget {
           labelType: NavigationRailLabelType.all,
           destinations: destinations,
           selectedIndex: page.value,
-          onDestinationSelected: (index) => page.value = index,
+          onDestinationSelected: (index) async {
+            if (editing.editing && index == destinations.length - 1) {
+              await pagesState.createPage(parent);
+            }
+            page.value = index;
+          },
         ),
         VerticalDivider(thickness: 1, width: 1),
         Expanded(child: NavigatedPage(selectedPage, parent: parent))
@@ -144,72 +260,78 @@ class NavigationInset extends HookWidget {
 class WikiDestination extends NavigationRailDestination {
   final String destination;
   final Doc page;
-  WikiDestination(this.destination, this.page)
-      : super(icon: SizedBox.shrink(), label: Text(destination));
+  final bool isAdd;
+  WikiDestination(this.destination, this.page, [this.isAdd = false])
+      : super(
+            icon: isAdd ? Icon(Icons.add) : SizedBox.shrink(),
+            label: isAdd ? SizedBox.shrink() : Text(destination));
 }
 
 class NavigatedPage extends HookWidget {
   final Doc page;
   final Doc parent;
-  NavigatedPage(this.page, {this.parent});
+  NavigatedPage(this.page, {this.parent}) : super(key: ObjectKey(page));
 
   @override
   Widget build(BuildContext context) {
-    final pages = useProvider(docs).maybeWhen(
-        data: (d) =>
-            page.children.asMap().map((_, p) => MapEntry(p, d.pages[p])),
-        orElse: () => <String, Doc>{});
+    final pages = useProvider(docs);
+    final children =
+        page.children.asMap().map((_, p) => MapEntry(p, pages.pages[p]));
     if (page.children.isEmpty || parent == page) {
       return WikiPage(page);
     } else {
-      return NavigationInset(pages, parent: page);
+      return NavigationInset(children, parent: page);
     }
   }
 }
 
-class WikiPage extends StatelessWidget {
+class WikiPage extends HookWidget {
   final Doc page;
-  WikiPage(this.page);
+  WikiPage(this.page) : super(key: ObjectKey(page));
 
   @override
   Widget build(BuildContext context) {
-    final document =
-        useMemoized(() => NotusDocument.fromJson(json.decode(page.content)));
-    final zefyrController = useMemoized(() => ZefyrController(document));
-    final focusNode = useFocusNode();
-    final editing = useState(false);
-
+    final editing = useProvider(editingProvider);
+    final pages = useProvider(docs);
+    final _titleController = useTextEditingController(text: page.name);
+    final _controller = useTextEditingController(text: page.content);
+    editing.save =
+        () => _save(pages, _titleController, _controller, context, editing);
     return Scaffold(
-      body: ZefyrScaffold(
-        child: editing.value
-            ? ZefyrEditor(controller: zefyrController, focusNode: focusNode)
-            : ZefyrView(document: document),
-      ),
-      floatingActionButton: Builder(
-        builder: (context) {
-          return editing.value
-              ? FloatingActionButton(
-                  child: Icon(Icons.save),
-                  onPressed: () => _save(zefyrController, context, editing),
-                )
-              : FloatingActionButton(
-                  child: Icon(Icons.edit),
-                  onPressed: () => editing.value = true);
-        },
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: editing.editing
+            ? Column(
+                children: [
+                  TextField(
+                      controller: _titleController, maxLines: 1, minLines: 1),
+                  Expanded(
+                    child: TextField(
+                        controller: _controller,
+                        expands: true,
+                        maxLines: null,
+                        minLines: null),
+                  ),
+                ],
+              )
+            : MarkdownBody(
+                data: '# ${_titleController.text}\n---\n' +
+                    (_controller.text.isNullOrEmpty
+                        ? '## This Page is Empty'
+                        : _controller.text)),
       ),
     );
   }
 
   void _save(
-      ZefyrController controller, BuildContext context, ValueNotifier editing) {
-    final contents = jsonEncode(controller.document);
-
+      Documents pages,
+      TextEditingController titleController,
+      TextEditingController controller,
+      BuildContext context,
+      EditingState editing) async {
+    await pages.savePage(editing, page, titleController.text, controller.text);
     // For this example we save our document to a temporary file.
-    final file = File(Directory.systemTemp.path + "/quick_start.json");
-    // And show a snack bar on success.
-    file.writeAsString(contents).then((_) {
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text("Saved.")));
-    });
-    editing.value = false;
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text("Saved.")));
+    editing.editing = false;
   }
 }
