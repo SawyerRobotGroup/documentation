@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dartx/dartx.dart';
+import 'package:zefyr/zefyr.dart';
+import 'package:quill_delta/quill_delta.dart';
 
 final docs = FutureProvider((_) async {
   final manifest = await rootBundle.loadString('AssetManifest.json');
@@ -101,7 +104,8 @@ class HomePage extends HookWidget {
 
 class NavigationInset extends HookWidget {
   final Map<String, Doc> pages;
-  NavigationInset(this.pages);
+  final Doc parent;
+  NavigationInset(this.pages, {this.parent});
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +118,9 @@ class NavigationInset extends HookWidget {
       destinations.removeWhere((p) => p.destination == 'Home');
       destinations.insert(0, home);
     }
+    if (parent != null) {
+      destinations.insert(0, WikiDestination('Home', parent));
+    }
     if (destinations.length == 1) {
       destinations.add(WikiDestination('', null));
     }
@@ -122,12 +129,13 @@ class NavigationInset extends HookWidget {
     return Row(
       children: [
         NavigationRail(
+          labelType: NavigationRailLabelType.all,
           destinations: destinations,
           selectedIndex: page.value,
           onDestinationSelected: (index) => page.value = index,
         ),
         VerticalDivider(thickness: 1, width: 1),
-        Expanded(child: WikiPage(selectedPage))
+        Expanded(child: NavigatedPage(selectedPage, parent: parent))
       ],
     );
   }
@@ -137,12 +145,13 @@ class WikiDestination extends NavigationRailDestination {
   final String destination;
   final Doc page;
   WikiDestination(this.destination, this.page)
-      : super(icon: Text(destination), label: SizedBox.shrink());
+      : super(icon: SizedBox.shrink(), label: Text(destination));
 }
 
-class WikiPage extends HookWidget {
+class NavigatedPage extends HookWidget {
   final Doc page;
-  WikiPage(this.page);
+  final Doc parent;
+  NavigatedPage(this.page, {this.parent});
 
   @override
   Widget build(BuildContext context) {
@@ -150,10 +159,57 @@ class WikiPage extends HookWidget {
         data: (d) =>
             page.children.asMap().map((_, p) => MapEntry(p, d.pages[p])),
         orElse: () => <String, Doc>{});
-    if (page.children.isEmpty) {
-      return Center(child: Text('${page.name}'));
+    if (page.children.isEmpty || parent == page) {
+      return WikiPage(page);
     } else {
-      return NavigationInset(pages);
+      return NavigationInset(pages, parent: page);
     }
+  }
+}
+
+class WikiPage extends StatelessWidget {
+  final Doc page;
+  WikiPage(this.page);
+
+  @override
+  Widget build(BuildContext context) {
+    final document =
+        useMemoized(() => NotusDocument.fromJson(json.decode(page.content)));
+    final zefyrController = useMemoized(() => ZefyrController(document));
+    final focusNode = useFocusNode();
+    final editing = useState(false);
+
+    return Scaffold(
+      body: ZefyrScaffold(
+        child: editing.value
+            ? ZefyrEditor(controller: zefyrController, focusNode: focusNode)
+            : ZefyrView(document: document),
+      ),
+      floatingActionButton: Builder(
+        builder: (context) {
+          return editing.value
+              ? FloatingActionButton(
+                  child: Icon(Icons.save),
+                  onPressed: () => _save(zefyrController, context, editing),
+                )
+              : FloatingActionButton(
+                  child: Icon(Icons.edit),
+                  onPressed: () => editing.value = true);
+        },
+      ),
+    );
+  }
+
+  void _save(
+      ZefyrController controller, BuildContext context, ValueNotifier editing) {
+    final contents = jsonEncode(controller.document);
+
+    // For this example we save our document to a temporary file.
+    final file = File(Directory.systemTemp.path + "/quick_start.json");
+    // And show a snack bar on success.
+    file.writeAsString(contents).then((_) {
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text("Saved.")));
+    });
+    editing.value = false;
   }
 }
