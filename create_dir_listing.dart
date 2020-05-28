@@ -14,6 +14,7 @@ void main() async {
   final listing = json.encode(files);
   final f = File(path.join(projectLoc, 'index.json'));
   if (!f.existsSync()) {
-    f.writeAsStringSync(listing);
+    f.create();
   }
+  f.writeAsStringSync(listing);
 }

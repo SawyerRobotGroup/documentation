@@ -43,6 +43,8 @@ class Documents extends ChangeNotifier {
   final url = kReleaseMode
       ? 'https://byu_sawyer_docs.codemagic.app/docs/'
       : 'http://localhost:8080/docs/';
+
+  String requestedPage;
   Documents() {
     init();
   }
@@ -96,6 +98,12 @@ class Documents extends ChangeNotifier {
   Future<void> savePage(
       EditingState state, Doc page, String title, String contents) async {
     final newTitleFileName = titleToFileName(title);
+    final hasParent = page.path.contains('/');
+    final parent =
+        hasParent ? page.path.substring(0, page.path.lastIndexOf('/')) : null;
+    final localPath =
+        hasParent ? path.join(parent, newTitleFileName) : newTitleFileName;
+    final newPath = path.join(projectLoc, localPath);
     if (title != page.name) {
       final f = File(path.join(projectLoc, page.path));
       await f.delete();
@@ -106,21 +114,40 @@ class Documents extends ChangeNotifier {
             .rename(path.join(projectLoc, newTitleFileName.split(ext)[0]));
       }
       pages.remove(page.path);
+      print('Children: ${pages[parent + ext]?.children}');
+      pages[parent + ext]?.children?.remove(page.path);
+      requestedPage = localPath.split(ext)[0];
+      print('Going to $requestedPage');
     }
-    final hasParent = page.path.contains('/');
-    final parent =
-        hasParent ? page.path.substring(0, page.path.lastIndexOf('/')) : null;
-    final localPath =
-        hasParent ? path.join(parent, newTitleFileName) : newTitleFileName;
-    final newPath = path.join(projectLoc, localPath);
+
     pages[localPath] = Doc(localPath, title, page.children, contents);
+    pages[parent + ext]?.children?.add(localPath);
+    print('Children: ${pages[parent + ext]?.children}');
     final file = File(newPath);
     // And show a snack bar on success.
     if (!await file.exists()) {
       await file.create();
     }
     await file.writeAsString(contents);
+    await updateDirectoryListing();
     notifyListeners();
+  }
+
+  Future<void> updateDirectoryListing() async {
+    if (kIsWeb) {
+      return;
+    }
+    final files = await Directory(projectLoc)
+        .list(recursive: true)
+        .where((entity) => entity.path.contains(ext))
+        .map((e) => e.path.split(projectLoc)[1])
+        .toList();
+    final listing = json.encode(files);
+    final f = File(path.join(projectLoc, 'index.json'));
+    if (!f.existsSync()) {
+      f.create();
+    }
+    f.writeAsStringSync(listing);
   }
 
   Future<void> createPage(Doc parent) async {
@@ -131,6 +158,15 @@ class Documents extends ChangeNotifier {
     await file.create();
     await file.writeAsString('');
     pages[localPath] = Doc(localPath, 'New Page', [], '');
+    if (!localPath.contains('/')) {
+      rootPages[localPath] = pages[localPath];
+    }
+    await updateDirectoryListing();
+    notifyListeners();
+  }
+
+  void showPage(String str) {
+    requestedPage = str;
     notifyListeners();
   }
 }

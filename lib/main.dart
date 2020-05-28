@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -5,7 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'state.dart';
 
 void main() {
@@ -57,19 +59,25 @@ class HomePage extends HookWidget {
   }
 }
 
+String getKey(Doc parent, Map<String, Doc> pages) {
+  return '${parent?.path}, ${pages.keys.join(',')}';
+}
+
 class NavigationInset extends HookWidget {
   final Map<String, Doc> pages;
   final Doc parent;
-  NavigationInset(this.pages, {this.parent}) : super(key: ObjectKey(parent));
+  NavigationInset(this.pages, {this.parent})
+      : super(key: Key(getKey(parent, pages)));
 
   @override
   Widget build(BuildContext context) {
-    final page = useState(0);
     final pagesState = useProvider(docs);
+    final page = useState(0);
     final editing = useProvider(editingProvider);
     final destinations = pages.keys
         .map((p) => WikiDestination(pages[p].name, pages[p]))
         .toList();
+
     if (destinations.any((p) => p.destination == 'Home')) {
       final home = destinations.firstWhere((p) => p.destination == 'Home');
       destinations.removeWhere((p) => p.destination == 'Home');
@@ -84,6 +92,25 @@ class NavigationInset extends HookWidget {
     if (editing.editing) {
       destinations.add(WikiDestination('Add', null, true));
     }
+    useValueChanged(pagesState.requestedPage, (_, __) {
+      final newPage = pagesState.requestedPage;
+      for (final d in destinations.asMap().entries) {
+        if (d.value.isAdd || d.value.page == null) {
+          continue;
+        }
+        final destPage = d.value.page.path.split(ext)[0];
+        if (newPage == destPage) {
+          scheduleMicrotask(() => pagesState.showPage(null));
+          page.value = d.key;
+          print('Found It!');
+          return;
+        } else if (newPage != null && newPage.startsWith(destPage)) {
+          page.value = d.key;
+          print('Found a parent!');
+          return;
+        }
+      }
+    });
     final selectedDestination = destinations[page.value];
     final selectedPage = selectedDestination.page ?? pages.values.toList()[0];
     return Row(
@@ -163,7 +190,17 @@ class WikiPage extends HookWidget {
               ],
             )
           : MarkdownBody(
-              styleSheet: MarkdownStyleSheet(h4Align: WrapAlignment.center),
+              onTapLink: (str) async {
+                print(str);
+                if (str.contains('://')) {
+                  await canLaunch(str);
+                  launch(str);
+                } else {
+                  pages.showPage(str.split(ext)[0]);
+                }
+              },
+              selectable: true,
+              styleSheet: MarkdownStyleSheet(h1Align: WrapAlignment.center),
               data: '# ${_titleController.text}\n---\n' +
                   (_controller.text.isNullOrEmpty
                       ? '## This Page is Empty'
@@ -179,9 +216,10 @@ class WikiPage extends HookWidget {
       TextEditingController controller,
       BuildContext context,
       EditingState editing) async {
+    final scaffold = Scaffold.of(context);
     await pages.savePage(editing, page, titleController.text, controller.text);
     // For this example we save our document to a temporary file.
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text("Saved")));
+    scaffold.showSnackBar(SnackBar(content: Text("Saved")));
     editing.editing = false;
   }
 }
