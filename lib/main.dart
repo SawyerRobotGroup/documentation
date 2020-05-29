@@ -219,7 +219,6 @@ class WikiPage extends HookWidget {
                   pages.showPage(str.split(ext)[0]);
                 }
               },
-              selectable: true,
               styleSheet: MarkdownStyleSheet(h1Align: WrapAlignment.center),
               data: '# ${_titleController.text.toUpperCase()}\n---\n' +
                   (_controller.text.isNullOrEmpty
