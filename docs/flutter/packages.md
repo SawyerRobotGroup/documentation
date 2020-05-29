@@ -31,6 +31,12 @@ dependencies:
 * [flutter_rosutils] Some helpers for the roslib library to keep state of flutter application in sync with what is happening in ROS
 * [dart_statistics] Used in the proficiency assessment work, with the mouse-cheese world flutter application
 
+## Promising Packages
+Currently we aren't using, but probably should use:
+* [dartros](pub.dev/packages/dartros)
+* [maestro](pub.dev/packages/maestro)
+* [freezed](pub.dev/packages/freezed)
+
 ## Sawyer Faces
 
 * [flare_flutter](pub.dev/packages/flare_flutter) (Animation framework)
