@@ -1,0 +1,12 @@
+## ROS (Robot Operating System) Introduction
+
+We use ROS for our robot system. 
+
+It provides us with a lot of wonderful tools out of the box.
+* Kinect Integration
+* Physical Manipulation
+* Communication Framework
+* Logging
+* Debugging and Infrastructure
+
+To learn more about basic ROS concepts visit [ROS Basics](ros/basics.dart)
