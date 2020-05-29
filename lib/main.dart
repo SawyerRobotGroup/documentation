@@ -37,41 +37,50 @@ class HomePage extends HookWidget {
   Widget build(BuildContext context) {
     final editing = useProvider(editingProvider);
     final pages = useProvider(docs).rootPages;
+    final pagesState = useProvider(docs);
+
     return Scaffold(
       body: pages.length < 2
           ? Center(child: CircularProgressIndicator())
-          : NavigationInset(pages),
+          : NavigationInset(pages, pagesState),
       floatingActionButton: !kIsWeb
-          ? Builder(
-              builder: (context) {
-                return editing.editing
-                    ? FloatingActionButton(
-                        child: Icon(Icons.save),
-                        onPressed: () => editing.save(),
-                      )
-                    : FloatingActionButton(
-                        child: Icon(Icons.edit),
-                        onPressed: () => editing.editing = true);
-              },
-            )
+          ? editing.editing
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FloatingActionButton(
+                      child: Icon(Icons.delete),
+                      onPressed: () => editing.delete(),
+                    ),
+                    SizedBox(height: 20),
+                    FloatingActionButton(
+                      child: Icon(Icons.save),
+                      onPressed: () => editing.save(),
+                    ),
+                  ],
+                )
+              : FloatingActionButton(
+                  child: Icon(Icons.edit),
+                  onPressed: () => editing.editing = true)
           : null,
     );
   }
 }
 
-String getKey(Doc parent, Map<String, Doc> pages) {
-  return '${parent?.path}, ${pages.keys.join(',')}';
+String getKey(Doc parent, Doc child, Map<String, Doc> pages) {
+  return '${parent?.path}, ${child?.path}, ${child?.children?.map((c) => getKey(child, pages[c], pages))?.join('')}';
 }
 
 class NavigationInset extends HookWidget {
   final Map<String, Doc> pages;
   final Doc parent;
-  NavigationInset(this.pages, {this.parent})
-      : super(key: Key(getKey(parent, pages)));
+  final Documents pagesState;
+  NavigationInset(this.pages, this.pagesState, {this.parent})
+      : super(key: Key(getKey(parent, parent, pagesState.pages)));
 
   @override
   Widget build(BuildContext context) {
-    final pagesState = useProvider(docs);
+    // print('Rebuilding $key');
     final page = useState(0);
     final editing = useProvider(editingProvider);
     final destinations = pages.keys
@@ -92,7 +101,7 @@ class NavigationInset extends HookWidget {
     if (editing.editing) {
       destinations.add(WikiDestination('Add', null, true));
     }
-    useValueChanged(pagesState.requestedPage, (_, __) {
+    if (pagesState.requestedPage != null) {
       final newPage = pagesState.requestedPage;
       for (final d in destinations.asMap().entries) {
         if (d.value.isAdd || d.value.page == null) {
@@ -102,15 +111,12 @@ class NavigationInset extends HookWidget {
         if (newPage == destPage) {
           scheduleMicrotask(() => pagesState.showPage(null));
           page.value = d.key;
-          print('Found It!');
-          return;
+          break;
         } else if (newPage != null && newPage.startsWith(destPage)) {
           page.value = d.key;
-          print('Found a parent!');
-          return;
         }
       }
-    });
+    }
     final selectedDestination = destinations[page.value];
     final selectedPage = selectedDestination.page ?? pages.values.toList()[0];
     return Row(
@@ -127,7 +133,7 @@ class NavigationInset extends HookWidget {
           },
         ),
         VerticalDivider(thickness: 1, width: 1),
-        Expanded(child: NavigatedPage(selectedPage, parent: parent))
+        Expanded(child: NavigatedPage(selectedPage, pagesState, parent: parent))
       ],
     );
   }
@@ -140,23 +146,24 @@ class WikiDestination extends NavigationRailDestination {
   WikiDestination(this.destination, this.page, [this.isAdd = false])
       : super(
             icon: isAdd ? Icon(Icons.add) : SizedBox.shrink(),
-            label: isAdd ? SizedBox.shrink() : Text(destination));
+            label: isAdd ? SizedBox.shrink() : Text(destination.toUpperCase()));
 }
 
 class NavigatedPage extends HookWidget {
   final Doc page;
   final Doc parent;
-  NavigatedPage(this.page, {this.parent}) : super(key: ObjectKey(page));
+  final Documents pagesState;
+  NavigatedPage(this.page, this.pagesState, {this.parent})
+      : super(key: Key(getKey(parent, page, pagesState.pages)));
 
   @override
   Widget build(BuildContext context) {
-    final pages = useProvider(docs);
     final children =
-        page.children.asMap().map((_, p) => MapEntry(p, pages.pages[p]));
-    if (page.children.isEmpty || parent == page) {
+        page.children.asMap().map((_, p) => MapEntry(p, pagesState.pages[p]));
+    if (page.children.isEmpty || (parent == page)) {
       return WikiPage(page);
     } else {
-      return NavigationInset(children, parent: page);
+      return NavigationInset(children, pagesState, parent: page);
     }
   }
 }
@@ -173,26 +180,39 @@ class WikiPage extends HookWidget {
     final _controller = useTextEditingController(text: page.content);
     editing.save =
         () => _save(pages, _titleController, _controller, context, editing);
+    editing.delete = () => _delete(pages, page, context, editing);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: editing.editing
           ? Column(
               children: [
                 TextField(
-                    controller: _titleController, maxLines: 1, minLines: 1),
+                    controller: _titleController,
+                    maxLines: 1,
+                    minLines: 1,
+                    style: Theme.of(context).textTheme.headline4),
                 Expanded(
                   child: TextField(
                       controller: _controller,
                       expands: true,
                       maxLines: null,
-                      minLines: null),
+                      minLines: null,
+                      style: Theme.of(context).textTheme.subtitle1),
                 ),
               ],
             )
           : MarkdownBody(
               onTapLink: (str) async {
-                print(str);
-                if (str.contains('://')) {
+                print('Navigate to $str');
+                if (str.contains('://') ||
+                    str.contains('.org') ||
+                    str.contains('.dev')) {
+                  if (str.contains('http://')) {
+                    str = str.replaceAll('http://', 'https://');
+                  }
+                  if (!str.contains('https://')) {
+                    str = 'https://$str';
+                  }
                   await canLaunch(str);
                   launch(str);
                 } else {
@@ -201,7 +221,7 @@ class WikiPage extends HookWidget {
               },
               selectable: true,
               styleSheet: MarkdownStyleSheet(h1Align: WrapAlignment.center),
-              data: '# ${_titleController.text}\n---\n' +
+              data: '# ${_titleController.text.toUpperCase()}\n---\n' +
                   (_controller.text.isNullOrEmpty
                       ? '## This Page is Empty'
                       : _controller.text),
@@ -218,8 +238,35 @@ class WikiPage extends HookWidget {
       EditingState editing) async {
     final scaffold = Scaffold.of(context);
     await pages.savePage(editing, page, titleController.text, controller.text);
-    // For this example we save our document to a temporary file.
     scaffold.showSnackBar(SnackBar(content: Text("Saved")));
     editing.editing = false;
+  }
+
+  void _delete(
+      Documents pages, Doc page, BuildContext context, EditingState editing) {
+    final scaffold = Scaffold.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        duration: 5.seconds,
+        content: Text('Are you sure you want to delete ${page.name}'),
+        action: SnackBarAction(
+          label: 'Yes',
+          onPressed: () async {
+            final success = await pages.deletePage(editing, page);
+            scaffold.showSnackBar(
+              SnackBar(
+                duration: success ? 5.seconds : 8.seconds,
+                content: Text(
+                  success
+                      ? "Deleted"
+                      : "Can't delete a page that has children, first delete or move the children (moving has to be done manually)",
+                ),
+              ),
+            );
+            editing.editing = false;
+          },
+        ),
+      ),
+    );
   }
 }
