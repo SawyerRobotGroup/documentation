@@ -5,7 +5,7 @@ import 'package:path/path.dart' as path;
 String get projectLoc => path.join(
     Platform.environment['HOME'], 'sawyer_ws/src/documentation/docs/');
 const String ext = '.md';
-void main() async {
+Future<void> main() async {
   final files = await Directory(projectLoc)
       .list(recursive: true)
       .where((entity) => entity.path.contains(ext))
@@ -14,7 +14,7 @@ void main() async {
   final listing = json.encode(files);
   final f = File(path.join(projectLoc, 'index.json'));
   if (!f.existsSync()) {
-    f.create();
+    await f.create();
   }
   f.writeAsStringSync(listing);
 }

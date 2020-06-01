@@ -15,8 +15,8 @@ const String ext = '.md';
 final editingProvider = ChangeNotifierProvider((ref) => EditingState(ref));
 
 class EditingState extends ChangeNotifier {
-  ProviderReference ref;
   EditingState(this.ref);
+  ProviderReference ref;
 
   bool _editing = false;
   bool get editing => _editing;
@@ -45,18 +45,19 @@ class EditingState extends ChangeNotifier {
 }
 
 class Documents extends ChangeNotifier {
-  Map<String, Doc> _pages = {};
-  Map<String, Doc> _rootPages = {};
+  Documents() {
+    init();
+  }
+  final Map<String, Doc> _pages = {};
+  final Map<String, Doc> _rootPages = {};
   final initialized = Completer<bool>();
   final url = kReleaseMode
       ? 'https://byu_sawyer_docs.codemagic.app/docs/'
       : 'http://localhost:8080/docs/';
 
   String requestedPage;
-  Documents() {
-    init();
-  }
-  void init() async {
+
+  Future<void> init() async {
     final index = await getFile('index.json');
     final files = (json.decode(index) as List<dynamic>)
         .cast<String>()
@@ -70,7 +71,9 @@ class Documents extends ChangeNotifier {
   }
 
   Future<String> getFile(String p) async {
-    if (!kIsWeb) return await File(path.join(projectLoc, p)).readAsString();
+    if (!kIsWeb) {
+      return File(path.join(projectLoc, p)).readAsString();
+    }
     return (await http.get(url + p)).body;
   }
 
@@ -96,9 +99,8 @@ class Documents extends ChangeNotifier {
 
   Map<String, Doc> get pages => _pages;
   Map<String, Doc> get rootPages => _rootPages;
-  String titleToFileName(String title) {
-    return title.split(' ').map((s) => s.toLowerCase()).join('_') + ext;
-  }
+  String titleToFileName(String title) =>
+      title.split(' ').map((s) => s.toLowerCase()).join('_') + ext;
 
   String get projectLoc => path.join(
       Platform.environment['HOME'], 'sawyer_ws/src/documentation/docs/');
@@ -122,7 +124,7 @@ class Documents extends ChangeNotifier {
   }
 
   Future<void> createPage(Doc parent) async {
-    var localPath = parent == null
+    final localPath = parent == null
         ? 'new_page.md'
         : path.join(parent.path.split(ext)[0], 'new_page.md');
     // And show a snack bar on success.
@@ -132,7 +134,7 @@ class Documents extends ChangeNotifier {
   }
 
   Future<bool> deletePage(EditingState editing, Doc page) async {
-    if (page.children.length > 0) {
+    if (page.children.isNotEmpty) {
       return false;
     } else {
       await _removePage(page.path);
@@ -154,7 +156,7 @@ class Documents extends ChangeNotifier {
     final listing = json.encode(files);
     final f = File(path.join(projectLoc, 'index.json'));
     if (!f.existsSync()) {
-      f.create();
+      await f.create();
     }
     f.writeAsStringSync(listing);
   }
@@ -165,8 +167,8 @@ class Documents extends ChangeNotifier {
     await f.delete();
     // Move the children (if renaming)
     final children = Directory(path.join(projectLoc, p).split(ext)[0]);
-    if (await children.exists()) {
-      assert(rename != null);
+    if (children.existsSync()) {
+      assert(rename != null, 'Do not delete a page with children');
       await children.rename(path.join(projectLoc, rename.split(ext)[0]));
     }
     // Remove from local maps
@@ -200,7 +202,7 @@ class Documents extends ChangeNotifier {
     // Writes the file
     final file = File(path.join(
         Platform.environment['HOME'], 'sawyer_ws/src/documentation/docs/', p));
-    if (!await file.exists()) {
+    if (!file.existsSync()) {
       await file.create();
     }
     await file.writeAsString(doc.content);
@@ -216,10 +218,9 @@ class Documents extends ChangeNotifier {
 }
 
 class Doc {
+  Doc(this.path, this.name, this.children, this.content);
   final String path;
   final String name;
   final List<String> children;
   final String content;
-
-  Doc(this.path, this.name, this.children, this.content);
 }

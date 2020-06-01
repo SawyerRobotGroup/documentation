@@ -11,28 +11,27 @@ import 'package:url_launcher/url_launcher.dart';
 import 'state.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+  const MyApp({Key key}) : super(key: key);
   @override
-  Widget build(BuildContext context) {
-    return ProviderScope(
-      child: MaterialApp(
-        title: 'Sawyer Documentation',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.red,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
+  Widget build(BuildContext context) => ProviderScope(
+        child: MaterialApp(
+          title: 'Sawyer Documentation',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primarySwatch: Colors.red,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          home: const HomePage(),
         ),
-        home: HomePage(),
-      ),
-    );
-  }
+      );
 }
 
 class HomePage extends HookWidget {
+  const HomePage({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final editing = useProvider(editingProvider);
@@ -41,7 +40,7 @@ class HomePage extends HookWidget {
 
     return Scaffold(
       body: pages.length < 2
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : NavigationInset(pages, pagesState),
       floatingActionButton: !kIsWeb
           ? editing.editing
@@ -49,34 +48,35 @@ class HomePage extends HookWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     FloatingActionButton(
-                      child: Icon(Icons.delete),
                       onPressed: () => editing.delete(),
+                      child: const Icon(Icons.delete),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     FloatingActionButton(
-                      child: Icon(Icons.save),
                       onPressed: () => editing.save(),
+                      child: const Icon(Icons.save),
                     ),
                   ],
                 )
               : FloatingActionButton(
-                  child: Icon(Icons.edit),
-                  onPressed: () => editing.editing = true)
+                  onPressed: () => editing.editing = true,
+                  child: const Icon(Icons.edit),
+                )
           : null,
     );
   }
 }
 
-String getKey(Doc parent, Doc child, Map<String, Doc> pages) {
-  return '${parent?.path}, ${child?.path}, ${child?.children?.map((c) => getKey(child, pages[c], pages))?.join('')}';
-}
+String getKey(Doc parent, Doc child, Map<String, Doc> pages) => '''
+${parent?.path}, ${child?.path}, 
+${child?.children?.map((c) => getKey(child, pages[c], pages))?.join()}''';
 
 class NavigationInset extends HookWidget {
+  NavigationInset(this.pages, this.pagesState, {this.parent})
+      : super(key: Key(getKey(parent, parent, pagesState.pages)));
   final Map<String, Doc> pages;
   final Doc parent;
   final Documents pagesState;
-  NavigationInset(this.pages, this.pagesState, {this.parent})
-      : super(key: Key(getKey(parent, parent, pagesState.pages)));
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +99,7 @@ class NavigationInset extends HookWidget {
       destinations.add(WikiDestination('', null));
     }
     if (editing.editing) {
-      destinations.add(WikiDestination('Add', null, true));
+      destinations.add(WikiDestination('Add', null, isAdd: true));
     }
     if (pagesState.requestedPage != null) {
       final newPage = pagesState.requestedPage;
@@ -132,7 +132,7 @@ class NavigationInset extends HookWidget {
             page.value = index;
           },
         ),
-        VerticalDivider(thickness: 1, width: 1),
+        const VerticalDivider(thickness: 1, width: 1),
         Expanded(child: NavigatedPage(selectedPage, pagesState, parent: parent))
       ],
     );
@@ -140,21 +140,23 @@ class NavigationInset extends HookWidget {
 }
 
 class WikiDestination extends NavigationRailDestination {
+  WikiDestination(this.destination, this.page, {this.isAdd = false})
+      : super(
+            icon: isAdd ? const Icon(Icons.add) : const SizedBox.shrink(),
+            label: isAdd
+                ? const SizedBox.shrink()
+                : Text(destination.toUpperCase()));
   final String destination;
   final Doc page;
   final bool isAdd;
-  WikiDestination(this.destination, this.page, [this.isAdd = false])
-      : super(
-            icon: isAdd ? Icon(Icons.add) : SizedBox.shrink(),
-            label: isAdd ? SizedBox.shrink() : Text(destination.toUpperCase()));
 }
 
 class NavigatedPage extends HookWidget {
+  NavigatedPage(this.page, this.pagesState, {this.parent})
+      : super(key: Key(getKey(parent, page, pagesState.pages)));
   final Doc page;
   final Doc parent;
   final Documents pagesState;
-  NavigatedPage(this.page, this.pagesState, {this.parent})
-      : super(key: Key(getKey(parent, page, pagesState.pages)));
 
   @override
   Widget build(BuildContext context) {
@@ -169,8 +171,8 @@ class NavigatedPage extends HookWidget {
 }
 
 class WikiPage extends HookWidget {
-  final Doc page;
   WikiPage(this.page) : super(key: ObjectKey(page));
+  final Doc page;
 
   @override
   Widget build(BuildContext context) {
@@ -182,13 +184,12 @@ class WikiPage extends HookWidget {
         () => _save(pages, _titleController, _controller, context, editing);
     editing.delete = () => _delete(pages, page, context, editing);
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16),
       child: editing.editing
           ? Column(
               children: [
                 TextField(
                     controller: _titleController,
-                    maxLines: 1,
                     minLines: 1,
                     style: Theme.of(context).textTheme.headline4),
                 Expanded(
@@ -196,7 +197,6 @@ class WikiPage extends HookWidget {
                       controller: _controller,
                       expands: true,
                       maxLines: null,
-                      minLines: null,
                       style: Theme.of(context).textTheme.subtitle1),
                 ),
               ],
@@ -214,22 +214,23 @@ class WikiPage extends HookWidget {
                     str = 'https://$str';
                   }
                   await canLaunch(str);
-                  launch(str);
+                  await launch(str);
                 } else {
                   pages.showPage(str.split(ext)[0]);
                 }
               },
               styleSheet: MarkdownStyleSheet(h1Align: WrapAlignment.center),
-              data: '# ${_titleController.text.toUpperCase()}\n---\n' +
-                  (_controller.text.isNullOrEmpty
-                      ? '## This Page is Empty'
-                      : _controller.text),
+              data: '''
+# ${_titleController.text.toUpperCase()}
+---
+${_controller.text.isNullOrEmpty ? '## This Page is Empty' : _controller.text}
+''',
               shrinkWrap: false,
             ),
     );
   }
 
-  void _save(
+  Future<void> _save(
       Documents pages,
       TextEditingController titleController,
       TextEditingController controller,
@@ -237,7 +238,7 @@ class WikiPage extends HookWidget {
       EditingState editing) async {
     final scaffold = Scaffold.of(context);
     await pages.savePage(editing, page, titleController.text, controller.text);
-    scaffold.showSnackBar(SnackBar(content: Text("Saved")));
+    scaffold.showSnackBar(const SnackBar(content: Text('Saved')));
     editing.editing = false;
   }
 
@@ -257,8 +258,9 @@ class WikiPage extends HookWidget {
                 duration: success ? 5.seconds : 8.seconds,
                 content: Text(
                   success
-                      ? "Deleted"
-                      : "Can't delete a page that has children, first delete or move the children (moving has to be done manually)",
+                      ? 'Deleted'
+                      : """
+Can't delete a page that has children, first delete or move the children (moving has to be done manually)""",
                 ),
               ),
             );
