@@ -16,3 +16,8 @@ We use Flutter because
   * Android
   * Linux
   * web
+
+* To see instructions on how to install flutter and dart on our systems go [here](flutter/install.md)
+* To see a list of the common packages we use go [here](flutter/packages.md)
+* To see a list of helpful resources go [here](flutter/resources.md)
+* To see our Flutter/Dart coding standard go [here](flutter/code_standard.md)

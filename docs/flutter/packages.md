@@ -21,10 +21,13 @@ dependencies:
   another_package: any
 ```
 
-## Common Packages
+## Common Packages Recommended for use in all new projects, and integration into old projects
 
 * [provider](pub.dev/packages/provider)
 * [roslib](pub.dev/packages/roslib)
+* [flutter_hooks](pub.dev/packages/flutter_hooks)
+* [dartx](pub.dev/packages/dartx)
+* [pedantic](pub.dev/packages/pedantic)
 
 ## Custom Packages
 * [dartros](pub.dev/packages/dartros) (Still a work in progress)
@@ -38,9 +41,10 @@ Currently we aren't using, but probably should use:
 * [freezed](pub.dev/packages/freezed)
 
 ## Sawyer Faces
-
 * [flare_flutter](pub.dev/packages/flare_flutter) (Animation framework)
 
 ## Speech App
-
 * [googleapis](pub.dev/packages/googleapis)
+
+## SSharp
+* [socket_io](pub.dev/packages/socket_io)
