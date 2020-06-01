@@ -25,20 +25,19 @@ dependencies:
 
 * [provider](pub.dev/packages/provider)
 * [roslib](pub.dev/packages/roslib)
-* [flutter_hooks](pub.dev/packages/flutter_hooks)
-* [dartx](pub.dev/packages/dartx)
-* [pedantic](pub.dev/packages/pedantic)
 
+## New Packages To Start Using
+Currently we aren't using, but probably should use (in order of usefulness in day-to-day work):
+* [dartx](pub.dev/packages/dartx)
+* [flutter_hooks](pub.dev/packages/flutter_hooks)
+* [dartros](pub.dev/packages/dartros)
+* [maestro](pub.dev/packages/maestro)
+* [freezed](pub.dev/packages/freezed)
+  
 ## Custom Packages
 * [dartros](pub.dev/packages/dartros) (Still a work in progress)
 * [flutter_rosutils] Some helpers for the roslib library to keep state of flutter application in sync with what is happening in ROS
 * [dart_statistics] Used in the proficiency assessment work, with the mouse-cheese world flutter application
-
-## Promising Packages
-Currently we aren't using, but probably should use:
-* [dartros](pub.dev/packages/dartros)
-* [maestro](pub.dev/packages/maestro)
-* [freezed](pub.dev/packages/freezed)
 
 ## Sawyer Faces
 * [flare_flutter](pub.dev/packages/flare_flutter) (Animation framework)
