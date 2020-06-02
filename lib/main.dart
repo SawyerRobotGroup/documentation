@@ -22,6 +22,9 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Sawyer Documentation',
           debugShowCheckedModeBanner: false,
+          theme: ThemeData.dark().copyWith(
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
           darkTheme: ThemeData.dark().copyWith(
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
