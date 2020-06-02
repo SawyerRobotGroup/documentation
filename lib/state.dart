@@ -115,11 +115,10 @@ class Documents extends ChangeNotifier {
         hasParent ? path.join(parent, newTitleFileName) : newTitleFileName;
     if (title != page.name) {
       await _removePage(page.path, newTitleFileName);
-      requestedPage = localPath.split(ext)[0];
-      print('Going to $requestedPage');
     }
     await _addPage(Doc(localPath, title, page.children, contents));
     await updateDirectoryListing();
+    requestedPage = localPath.split(ext)[0];
     notifyListeners();
   }
 

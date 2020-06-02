@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:xcontext/xcontext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -21,11 +22,17 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Sawyer Documentation',
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            primarySwatch: Colors.red,
+          darkTheme: ThemeData.dark().copyWith(
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
-          home: const HomePage(),
+          themeMode: ThemeMode.dark,
+          home: Builder(
+            builder: (context) => MediaQuery(
+              data: context.mediaQuery.copyWith(
+                  textScaleFactor: context.mediaQuery.textScaleFactor * 1.25),
+              child: const HomePage(),
+            ),
+          ),
         ),
       );
 }
@@ -122,6 +129,9 @@ class NavigationInset extends HookWidget {
     return Row(
       children: [
         NavigationRail(
+          unselectedLabelTextStyle:
+              context.theme.textTheme.subtitle1.copyWith(color: Colors.white70),
+          elevation: 20,
           labelType: NavigationRailLabelType.all,
           destinations: destinations,
           selectedIndex: page.value,
@@ -132,7 +142,7 @@ class NavigationInset extends HookWidget {
             page.value = index;
           },
         ),
-        const VerticalDivider(thickness: 1, width: 1),
+        const VerticalDivider(thickness: 4, width: 4),
         Expanded(child: NavigatedPage(selectedPage, pagesState, parent: parent))
       ],
     );
@@ -201,31 +211,39 @@ class WikiPage extends HookWidget {
                 ),
               ],
             )
-          : MarkdownBody(
-              onTapLink: (str) async {
-                print('Navigate to $str');
-                if (str.contains('://') ||
-                    str.contains('.org') ||
-                    str.contains('.dev')) {
-                  if (str.contains('http://')) {
-                    str = str.replaceAll('http://', 'https://');
-                  }
-                  if (!str.contains('https://')) {
-                    str = 'https://$str';
-                  }
-                  await canLaunch(str);
-                  await launch(str);
-                } else {
-                  pages.showPage(str.split(ext)[0]);
-                }
-              },
-              styleSheet: MarkdownStyleSheet(h1Align: WrapAlignment.center),
-              data: '''
+          : Align(
+              alignment: Alignment.topCenter,
+              child: SingleChildScrollView(
+                child: MarkdownBody(
+                  onTapLink: (str) async {
+                    print('Navigate to $str');
+                    if (str.contains('://') ||
+                        str.contains('.org') ||
+                        str.contains('.dev')) {
+                      if (str.contains('http://')) {
+                        str = str.replaceAll('http://', 'https://');
+                      }
+                      if (!str.contains('https://')) {
+                        str = 'https://$str';
+                      }
+                      await canLaunch(str);
+                      await launch(str);
+                    } else {
+                      pages.showPage(str.split(ext)[0]);
+                    }
+                  },
+                  styleSheet: MarkdownStyleSheet(
+                      blockSpacing: 15,
+                      h1Align: WrapAlignment.center,
+                      textScaleFactor: 1.25),
+                  data: '''
 # ${_titleController.text.toUpperCase()}
 ---
 ${_controller.text.isNullOrEmpty ? '## This Page is Empty' : _controller.text}
 ''',
-              shrinkWrap: false,
+                  shrinkWrap: false,
+                ),
+              ),
             ),
     );
   }

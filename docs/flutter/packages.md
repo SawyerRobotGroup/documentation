@@ -15,6 +15,7 @@ The `^` means any package that is compatible with that version.
 Since we are usually pretty flexible with the version and are constantly updating our code,
 sometimes you'll see the key `any` which specifies that we are okay with any version. 
 This will fetch the latest version from [pub.dev](pub.dev)
+
 ```yaml
 dependencies:
   your_package_name: ^0.0.1
@@ -33,11 +34,12 @@ Currently we aren't using everywhere, but probably should use (in order of usefu
 * [dartros](pub.dev/packages/dartros)
 * [maestro](pub.dev/packages/maestro)
 * [freezed](pub.dev/packages/freezed)
+* [xcontext](pub.dev/packages/xcontext)
   
 ## Custom Packages
 * [dartros](pub.dev/packages/dartros) (Still a work in progress)
-* [flutter_rosutils] Some helpers for the roslib library to keep state of flutter application in sync with what is happening in ROS
-* [dart_statistics] Used in the proficiency assessment work, with the mouse-cheese world flutter application
+* [flutter_rosutils](pub.dev/packages/flutter_rosutils) Some helpers for the roslib library to keep state of flutter application in sync with what is happening in ROS
+* [dart_statistics](pub.dev/packages/dart_statistics) Used in the proficiency assessment work, with the mouse-cheese world flutter application
 
 ## Sawyer Faces
 * [flare_flutter](pub.dev/packages/flare_flutter) (Animation framework)

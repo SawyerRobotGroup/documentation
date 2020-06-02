@@ -4,4 +4,6 @@
 
 Tim created a script to setup your computer in one command. It will ask you to set up ssh keys on your gitlab account, as well as a few other various things.
 
-It has run into trouble before, so you might have to run it several times. Best to run it from your home directory.
+It has run into trouble before, so you might have to run it several times. 
+
+You will need to run it from your home directory first, and then subsequently it will expect to be run from `~/sawyer_ws`.

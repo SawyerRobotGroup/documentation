@@ -35,6 +35,7 @@ dependencies:
   flutter_markdown: any
   http: any
   pedantic: any
+  xcontext: any
   url_launcher_fde:
     git:
       url: git://github.com/google/flutter-desktop-embedding.git
