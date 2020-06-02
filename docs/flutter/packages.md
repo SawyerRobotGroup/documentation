@@ -35,6 +35,7 @@ Currently we aren't using everywhere, but probably should use (in order of usefu
 * [xcontext](pub.dev/packages/xcontext)
 * [freezed](pub.dev/packages/freezed)
 * [maestro](pub.dev/packages/maestro)
+* [flutter_launcher_icons](pub.dev/packages/flutter_launcher_icons) -- however, this [fork](https://github.com/personalizedrefrigerator/flutter_launcher_icons) is currently needed to generate icons for web
   
 ## Custom Packages
 * [dartros](pub.dev/packages/dartros) (Still a work in progress)
