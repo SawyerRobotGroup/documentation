@@ -30,11 +30,11 @@ dependencies:
 ## New Packages To Start Using
 Currently we aren't using everywhere, but probably should use (in order of usefulness in day-to-day work):
 * [dartx](pub.dev/packages/dartx)
+* [xcontext](pub.dev/packages/xcontext)
 * [flutter_hooks](pub.dev/packages/flutter_hooks)
 * [dartros](pub.dev/packages/dartros)
 * [maestro](pub.dev/packages/maestro)
 * [freezed](pub.dev/packages/freezed)
-* [xcontext](pub.dev/packages/xcontext)
   
 ## Custom Packages
 * [dartros](pub.dev/packages/dartros) (Still a work in progress)
