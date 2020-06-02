@@ -27,7 +27,7 @@ dependencies:
 * [roslib](pub.dev/packages/roslib)
 
 ## New Packages To Start Using
-Currently we aren't using, but probably should use (in order of usefulness in day-to-day work):
+Currently we aren't using everywhere, but probably should use (in order of usefulness in day-to-day work):
 * [dartx](pub.dev/packages/dartx)
 * [flutter_hooks](pub.dev/packages/flutter_hooks)
 * [dartros](pub.dev/packages/dartros)
