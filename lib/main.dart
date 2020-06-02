@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:xcontext/xcontext.dart';
+import 'package:xcontext/tiny_xcontext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -28,8 +28,8 @@ class MyApp extends StatelessWidget {
           themeMode: ThemeMode.dark,
           home: Builder(
             builder: (context) => MediaQuery(
-              data: context.mediaQuery.copyWith(
-                  textScaleFactor: context.mediaQuery.textScaleFactor * 1.25),
+              data: context.mq
+                  .copyWith(textScaleFactor: context.mq.textScaleFactor * 1.25),
               child: const HomePage(),
             ),
           ),
