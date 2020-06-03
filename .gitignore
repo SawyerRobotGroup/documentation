@@ -10,12 +10,13 @@ website/build/
 website/yarn.lock
 website/node_modules
 website/i18n/*
-build
+build/
 .vscode/
 fvm
 .flutter-plugins-dependencies
-.dart_tool
+.dart_tool/
 .flutter-plugins
 .packages
-android
-ios
+android/
+ios/
+windows/
