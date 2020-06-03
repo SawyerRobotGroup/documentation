@@ -13,3 +13,7 @@ website/i18n/*
 build
 .vscode/
 fvm
+.flutter-plugins-dependencies
+.dart_tool
+.flutter-plugins
+.packages
