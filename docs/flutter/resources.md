@@ -12,6 +12,9 @@ The Flutter [docs](https://flutter.dev/docs) has many resources such as:
 * Samples
 * Videos
 
+Full on courses:
+* [zero-to-hero](https://caster.io/courses/flutter-from-zero-to-hero)
+
 Other textual resources:
 * For a widget reference see the [gallery](https://gallery.flutter.dev/#/)
 * I would definitely go through the [layout](https://flutter.dev/docs/development/ui/layout) section of the Flutter docs (all pages in the section)
