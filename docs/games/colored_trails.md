@@ -46,6 +46,8 @@ Scoring is as follows:
 
 ### Using the GUI
 
+To read more on the inplementation of the GUI go [here](colored_trails/framework.md)
+
 IN PROGRESS
 
 ### Implementations So Far
@@ -57,6 +59,10 @@ IN PROGRESS
 [ ] Connection with S# algorithm for human AI play
 
 [ ] Connection with ROS for human robot play
+
+### Further Reading
+
+For more reading on Colored Trails, go [here](colored_trails/further_readings)
 
 ### Citations
 
