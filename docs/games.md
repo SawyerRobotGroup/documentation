@@ -1,5 +1,5 @@
 ## We use two games in our studies:
 
-- Block Game
+- [Block Game](games/block_game.md)
 
-- Colored Trails
+- [Colored Trails](games/colored_trails.md)
