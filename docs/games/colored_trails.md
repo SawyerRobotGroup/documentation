@@ -62,7 +62,7 @@ IN PROGRESS
 
 ### Further Reading
 
-For more reading on Colored Trails, go [here](colored_trails/further_readings)
+For more reading on Colored Trails, go [here](colored_trails/further_readings.md)
 
 ### Citations
 
