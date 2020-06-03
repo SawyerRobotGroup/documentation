@@ -11,6 +11,10 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'state.dart';
 
+extension on BuildContext {
+  bool get isMobile => mq.size.width < 500;
+}
+
 void main() {
   runApp(const MyApp());
 }
@@ -31,8 +35,10 @@ class MyApp extends StatelessWidget {
           themeMode: ThemeMode.dark,
           home: Builder(
             builder: (context) => MediaQuery(
-              data: context.mq
-                  .copyWith(textScaleFactor: context.mq.textScaleFactor * 1.25),
+              data: context.mq.copyWith(
+                  textScaleFactor: context.isMobile
+                      ? context.mq.textScaleFactor * .75
+                      : context.mq.textScaleFactor * 1.25),
               child: const HomePage(),
             ),
           ),
@@ -222,7 +228,8 @@ class WikiPage extends HookWidget {
                     print('Navigate to $str');
                     if (str.contains('://') ||
                         str.contains('.org') ||
-                        str.contains('.dev')) {
+                        str.contains('.dev') ||
+                        str.contains('.com')) {
                       if (str.contains('http://')) {
                         str = str.replaceAll('http://', 'https://');
                       }
@@ -238,7 +245,7 @@ class WikiPage extends HookWidget {
                   styleSheet: MarkdownStyleSheet(
                       blockSpacing: 15,
                       h1Align: WrapAlignment.center,
-                      textScaleFactor: 1.25),
+                      textScaleFactor: context.isMobile ? .75 : 1.25),
                   data: '''
 # ${_titleController.text.toUpperCase()}
 ---
