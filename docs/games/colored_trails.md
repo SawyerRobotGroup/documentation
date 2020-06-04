@@ -2,7 +2,7 @@
 
 Colored Trails is a cooperitive game used to test and study social interaction between players. We are using it to specifically study Human Robot interaction.
 
-The game is a 2-player game consisting of an n x m board of colored squares and a common goal square. Each player starts on one of the squares on the board and get a starting hand of k chips. These chips can be used to create a trail from the players starting position to the goal.
+The game is a 2-player game consisting of an n x m board (where n and m are integers) of colored squares and a common goal square. Each player starts on one of the squares on the board and get a starting hand of k chips. These chips can be used to create a trail from the players starting position to the goal.
 
 In our scenario n,m, and k all equal 4.
 
@@ -31,7 +31,7 @@ Validity is determined by 2 criteria adapted from Gal et al. [^1].
 
 ##### Exchange Proposal and Counter Proposal
 
-During the Exchange Proposal and the Counter Proposal phases, players will propose what chips that they would like to exchange with the other player and may deliberate with the each other.
+During the Exchange Proposal and the Counter Proposal phases, players will propose what chips that they would like to exchange with the other player and may deliberate with each other.
 
 This will keep going until the players either reach a consensus or one player says they will no longer negotiate.
 
