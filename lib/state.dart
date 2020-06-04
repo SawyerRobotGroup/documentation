@@ -12,7 +12,8 @@ final ChangeNotifierProvider<Documents> docs =
     ChangeNotifierProvider<Documents>((_) => Documents());
 
 const String ext = '.md';
-final editingProvider = ChangeNotifierProvider((ref) => EditingState(ref));
+final ChangeNotifierProvider<EditingState> editingProvider =
+    ChangeNotifierProvider((ref) => EditingState(ref));
 
 class EditingState extends ChangeNotifier {
   EditingState(this.ref);
@@ -50,8 +51,8 @@ class Documents extends ChangeNotifier {
   }
   final Map<String, Doc> _pages = {};
   final Map<String, Doc> _rootPages = {};
-  final initialized = Completer<bool>();
-  final url = kReleaseMode
+  final Completer<bool> initialized = Completer<bool>();
+  final String url = kReleaseMode
       ? 'https://byu_sawyer_docs.codemagic.app/docs/'
       : 'http://localhost:8080/docs/';
 
