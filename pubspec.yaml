@@ -64,8 +64,10 @@ scripts:
     - flutter create .
     - rm -r android
     - rm -r ios
-  copy_assets:
+  create_listing:
     - dart create_dir_listing.dart
+  copy_assets:
+    - derry run create_listing
     - mkdir -p build/web
     - rm -r build/web/docs
     - cp -r docs build/web
@@ -73,10 +75,10 @@ scripts:
     - derry run copy_assets
     - flutter build web
   linux:
-    - derry run copy_assets
+    - derry run create_listing
     - flutter run -d linux
   macos:
-    - derry run copy_assets
+    - derry run create_listing
     - flutter run -d macos
   web:
     - derry run copy_assets

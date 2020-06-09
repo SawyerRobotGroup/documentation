@@ -104,7 +104,10 @@ class Documents extends ChangeNotifier {
       title.split(' ').map((s) => s.toLowerCase()).join('_') + ext;
 
   String get projectLoc => path.join(
-      Platform.environment['HOME'], 'sawyer_ws/src/documentation/docs/');
+      Platform.isMacOS
+          ? '/Users/${Platform.environment['USER']}'
+          : Platform.environment['HOME'],
+      'sawyer_ws/src/documentation/docs/');
 
   Future<void> savePage(
       EditingState state, Doc page, String title, String contents) async {
