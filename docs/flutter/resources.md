@@ -26,3 +26,4 @@ Videos:
 * Not super needed for our project, but useful if you want to learn more about flutter animations see this youtube [channel](https://www.youtube.com/watch?v=GXIJJkq_H8g&list=PLjxrf2q8roU2v6UqYlt_KPaXlnjbYySua)
 * Individual Widget Info [Channel](https://www.youtube.com/watch?v=b_sQ9bMltGU&list=PLjxrf2q8roU23XGwz3Km7sQZFTdB996iG)
 * [Flutter Firebase and DDD or Dart playlists from ResoCoder](https://www.youtube.com/channel/UCSIvrn68cUk8CS8MbtBmBkA/playlists)
+* If you want to use the font from ResoCoder, download from [here](https://github.com/tonsky/FiraCode/wiki)
