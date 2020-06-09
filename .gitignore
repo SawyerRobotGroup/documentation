@@ -20,3 +20,4 @@ fvm
 android/
 ios/
 windows/
+*.lock
