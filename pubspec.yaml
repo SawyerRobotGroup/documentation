@@ -40,6 +40,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
 
 dev_dependencies:
+  derry: any
   flutter_test:
     sdk: flutter
   flutter_launcher_icons:
@@ -57,3 +58,26 @@ flutter_icons:
   ios: false
   web: true
   image_path: "assets/icons/ai.png"
+
+scripts:
+  recreate:
+    - flutter create .
+    - rm -r android
+    - rm -r ios
+  copy_assets:
+    - dart create_dir_listing.dart
+    - mkdir -p build/web
+    - rm -r build/web/docs
+    - cp -r docs build/web
+  build:
+    - derry run copy_assets
+    - flutter build web
+  linux:
+    - derry run copy_assets
+    - flutter run -d linux
+  macos:
+    - derry run copy_assets
+    - flutter run -d macos
+  web:
+    - derry run copy_assets
+    - flutter run -d chrome
