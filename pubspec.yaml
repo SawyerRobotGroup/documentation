@@ -59,6 +59,7 @@ flutter_icons:
   web: true
   image_path: "assets/icons/ai.png"
 
+# To enable these scripts run `pub global activate derry`
 scripts:
   recreate:
     - flutter create .
@@ -67,19 +68,19 @@ scripts:
   create_listing:
     - dart create_dir_listing.dart
   copy_assets:
-    - derry run create_listing
+    - $create_listing
     - mkdir -p build/web
     - rm -r build/web/docs
     - cp -r docs build/web
   build:
-    - derry run copy_assets
+    - $copy_assets
     - flutter build web
   linux:
-    - derry run create_listing
+    - $create_listing
     - flutter run -d linux
   macos:
-    - derry run create_listing
+    - $create_listing
     - flutter run -d macos
   web:
-    - derry run copy_assets
+    - $copy_assets
     - flutter run -d chrome
