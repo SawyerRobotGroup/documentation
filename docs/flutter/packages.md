@@ -33,10 +33,15 @@ Currently we aren't using everywhere, but probably should use (in order of usefu
 * [flutter_hooks](pub.dev/packages/flutter_hooks)
 * [dartros](pub.dev/packages/dartros)
 * [xcontext](pub.dev/packages/xcontext)
+* [derry](pub.dev/packages/derry)
 * [freezed](pub.dev/packages/freezed)
 * [maestro](pub.dev/packages/maestro)
+* [wiredash](pub.dev/packages/wiredash)
+* [breakpoint](pub.dev/packages/breakpoint)
 * [flutter_launcher_icons](pub.dev/packages/flutter_launcher_icons) -- however, this [fork](https://github.com/personalizedrefrigerator/flutter_launcher_icons) is currently needed to generate icons for web
-  
+* [fluttercommunity packages](https://pub.dev/publishers/fluttercommunity.dev/packages) 
+
+
 ## Custom Packages
 * [dartros](pub.dev/packages/dartros) (Still a work in progress)
 * [flutter_rosutils](pub.dev/packages/flutter_rosutils) Some helpers for the roslib library to keep state of flutter application in sync with what is happening in ROS
