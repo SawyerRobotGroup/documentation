@@ -39,7 +39,11 @@ Currently we aren't using everywhere, but probably should use (in order of usefu
 * [wiredash](pub.dev/packages/wiredash)
 * [breakpoint](pub.dev/packages/breakpoint)
 * [flutter_launcher_icons](pub.dev/packages/flutter_launcher_icons) -- however, this [fork](https://github.com/personalizedrefrigerator/flutter_launcher_icons) is currently needed to generate icons for web
+  
+## Packages to explore
 * [fluttercommunity packages](https://pub.dev/publishers/fluttercommunity.dev/packages) 
+* [textstyle_extensions](https://pub.dev/packages/textstyle_extensions)
+* [rnd](pub.dev/packages/rnd)
 
 
 ## Custom Packages
