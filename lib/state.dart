@@ -211,9 +211,16 @@ class Documents extends ChangeNotifier {
     await file.writeAsString(doc.content);
   }
 
-  void showPage(String str) {
+  bool canShowPage(String str) {
     if (pages.keys.any((element) => element.split(ext)[0] == str) ||
         str == null) {
+      return true;
+    }
+    return false;
+  }
+
+  void showPage(String str) {
+    if (canShowPage(str)) {
       requestedPage = str;
       notifyListeners();
     }

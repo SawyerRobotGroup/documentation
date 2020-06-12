@@ -140,6 +140,8 @@ class NavigationInset extends HookWidget {
         NavigationRail(
           unselectedLabelTextStyle:
               context.theme.textTheme.subtitle1.copyWith(color: Colors.white70),
+          selectedLabelTextStyle: context.theme.textTheme.subtitle1
+              .copyWith(color: Colors.blue.shade700),
           elevation: 20,
           labelType: NavigationRailLabelType.all,
           destinations: destinations,
@@ -236,10 +238,20 @@ class WikiPage extends HookWidget {
                       if (!str.contains('https://')) {
                         str = 'https://$str';
                       }
-                      await canLaunch(str);
-                      await launch(str);
+                      if (await canLaunch(str)) {
+                        await launch(str);
+                      } else {
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                            content: Text('Invalid external link $str')));
+                      }
                     } else {
-                      pages.showPage(str.split(ext)[0]);
+                      final pg = str.split(ext)[0];
+                      if (pages.canShowPage(pg)) {
+                        pages.showPage(pg);
+                      } else {
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                            content: Text('Invalid internal link $str')));
+                      }
                     }
                   },
                   styleSheet: MarkdownStyleSheet(
