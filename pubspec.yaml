@@ -81,6 +81,3 @@ scripts:
   macos:
     - $create_listing
     - flutter run -d macos
-  web:
-    - $copy_assets
-    - flutter run -d chrome
