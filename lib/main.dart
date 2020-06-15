@@ -110,6 +110,8 @@ class NavigationInset extends HookWidget {
     }
     if (parent != null) {
       destinations.insert(0, WikiDestination('Home', parent));
+      // TODO: Collapse sidebar on mobile to only see one sidebar
+      // destinations.insert(0, WikiDestination('<-', parent));
     }
     if (destinations.length == 1) {
       destinations.add(WikiDestination('', null));
@@ -135,8 +137,10 @@ class NavigationInset extends HookWidget {
     }
     final selectedDestination = destinations[page.value];
     final selectedPage = selectedDestination.page ?? pages.values.toList()[0];
+    final selectedHasChildren = selectedPage.children.isNotEmpty;
     return Row(
       children: [
+        // if (!selectedHasChildren)
         NavigationRail(
           unselectedLabelTextStyle:
               context.theme.textTheme.subtitle1.copyWith(color: Colors.white70),
@@ -163,10 +167,15 @@ class NavigationInset extends HookWidget {
 class WikiDestination extends NavigationRailDestination {
   WikiDestination(this.destination, this.page, {this.isAdd = false})
       : super(
-            icon: isAdd ? const Icon(Icons.add) : const SizedBox.shrink(),
-            label: isAdd
-                ? const SizedBox.shrink()
-                : Text(destination.toUpperCase()));
+          icon: isAdd ? const Icon(Icons.add) : const SizedBox.shrink(),
+          label: isAdd
+              ? const SizedBox.shrink()
+              : ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 140),
+                  child: Text(destination.toUpperCase(),
+                      textAlign: TextAlign.center),
+                ),
+        );
   final String destination;
   final Doc page;
   final bool isAdd;
@@ -224,46 +233,49 @@ class WikiPage extends HookWidget {
             )
           : Align(
               alignment: Alignment.topCenter,
-              child: SingleChildScrollView(
-                child: MarkdownBody(
-                  onTapLink: (str) async {
-                    print('Navigate to $str');
-                    if (str.contains('://') ||
-                        str.contains('.org') ||
-                        str.contains('.dev') ||
-                        str.contains('.com')) {
-                      if (str.contains('http://')) {
-                        str = str.replaceAll('http://', 'https://');
-                      }
-                      if (!str.contains('https://')) {
-                        str = 'https://$str';
-                      }
-                      if (await canLaunch(str)) {
-                        await launch(str);
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 800),
+                child: SingleChildScrollView(
+                  child: MarkdownBody(
+                    onTapLink: (str) async {
+                      print('Navigate to $str');
+                      if (str.contains('://') ||
+                          str.contains('.org') ||
+                          str.contains('.dev') ||
+                          str.contains('.com')) {
+                        if (str.contains('http://')) {
+                          str = str.replaceAll('http://', 'https://');
+                        }
+                        if (!str.contains('https://')) {
+                          str = 'https://$str';
+                        }
+                        if (await canLaunch(str)) {
+                          await launch(str);
+                        } else {
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text('Invalid external link $str')));
+                        }
                       } else {
-                        Scaffold.of(context).showSnackBar(SnackBar(
-                            content: Text('Invalid external link $str')));
+                        final pg = str.split(ext)[0];
+                        if (pages.canShowPage(pg)) {
+                          pages.showPage(pg);
+                        } else {
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text('Invalid internal link $str')));
+                        }
                       }
-                    } else {
-                      final pg = str.split(ext)[0];
-                      if (pages.canShowPage(pg)) {
-                        pages.showPage(pg);
-                      } else {
-                        Scaffold.of(context).showSnackBar(SnackBar(
-                            content: Text('Invalid internal link $str')));
-                      }
-                    }
-                  },
-                  styleSheet: MarkdownStyleSheet(
-                      blockSpacing: 15,
-                      h1Align: WrapAlignment.center,
-                      textScaleFactor: context.isMobile ? .75 : 1.25),
-                  data: '''
+                    },
+                    styleSheet: MarkdownStyleSheet(
+                        blockSpacing: 15,
+                        h1Align: WrapAlignment.center,
+                        textScaleFactor: context.isMobile ? .75 : 1.25),
+                    data: '''
 # ${_titleController.text.toUpperCase()}
 ---
 ${_controller.text.isNullOrEmpty ? '## This Page is Empty' : _controller.text}
 ''',
-                  shrinkWrap: false,
+                    shrinkWrap: false,
+                  ),
                 ),
               ),
             ),
