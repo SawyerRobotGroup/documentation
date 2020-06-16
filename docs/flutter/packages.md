@@ -33,6 +33,7 @@ Currently we aren't using everywhere, but probably should use (in order of usefu
 * [flutter_hooks](pub.dev/packages/flutter_hooks)
 * [dartros](pub.dev/packages/dartros)
 * [xcontext](pub.dev/packages/xcontext)
+* [basics](pub.dev/packages/basics)
 * [widgetx](pub.dev/packages/widgetx)
 * [derry](pub.dev/packages/derry)
 * [freezed](pub.dev/packages/freezed)
