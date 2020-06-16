@@ -27,7 +27,7 @@ dependencies:
   riverpod: any
   flutter_riverpod: any
   hooks_riverpod: any
-  dartx: any
+  dartx: ^0.4.1
   flutter_markdown: any
   http: any
   xcontext: any
