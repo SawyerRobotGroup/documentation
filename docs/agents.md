@@ -1,0 +1,7 @@
+## We use the S# / Livre algorithm
+
+To learn more about the basic concepts of the algorithms see the basic [concepts](agents/concepts.md)
+
+To learn more about our python implementation see the [implementation details](agents/python_implementation.md)
+
+To learn more about the old C++ S# implementation see [C++ S# Implementation](agents/c++_s#_implementation.md)

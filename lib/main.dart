@@ -171,7 +171,7 @@ class WikiDestination extends NavigationRailDestination {
           label: isAdd
               ? const SizedBox.shrink()
               : ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 140),
+                  constraints: const BoxConstraints(maxWidth: 170),
                   child: Text(destination.toUpperCase(),
                       textAlign: TextAlign.center),
                 ),
