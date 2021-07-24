@@ -33,7 +33,7 @@
         ],
         [
           "Dart Scripts",
-          "/linux/Dart Scripting"
+          "/linux/DartScripting"
         ]
       ]
     ],
@@ -46,7 +46,7 @@
         ],
         [
           "C++ SSharp",
-          "/agents/C++ SSharp"
+          "/agents/C++_SSharp"
         ],
         [
           "Concepts",
@@ -54,7 +54,7 @@
         ],
         [
           "Markov Game",
-          "/agents/Markov Game"
+          "/agents/MarkovGame"
         ]
       ]
     ],
@@ -70,7 +70,7 @@
           [
             [
               "Block Game",
-              "/games/block_game/Block Game"
+              "/games/block_game/BlockGame"
             ],
             [
               "Framework",
@@ -78,15 +78,15 @@
             ],
             [
               "AI vs AI",
-              "/games/block_game/AI vs AI"
+              "/games/block_game/AIvsAI"
             ],
             [
               "Human vs AI",
-              "/games/block_game/Human vs AI"
+              "/games/block_game/HumanvsAI"
             ],
             [
               "Human vs Human",
-              "/games/block_game/Human vs Human"
+              "/games/block_game/HumanvsHuman"
             ]
           ]
         ],
@@ -95,7 +95,7 @@
           [
             [
               "Colored Trails",
-              "/games/colored_trails/Colored Trails"
+              "/games/colored_trails/ColoredTrails"
             ],
             [
               "Framework",
@@ -103,15 +103,15 @@
             ],
             [
               "Automatic Mode",
-              "/games/colored_trails/Automatic Mode"
+              "/games/colored_trails/AutomaticMode"
             ],
             [
               "Manual Mode",
-              "/games/colored_trails/Manual Mode"
+              "/games/colored_trails/ManualMode"
             ],
             [
               "Further Readings",
-              "/games/colored_trails/Further Readings"
+              "/games/colored_trails/FurtherReadings"
             ]
           ]
         ]
@@ -129,25 +129,25 @@
           [
             [
               "Architecture",
-              "/flutter/Architecture"
+              "/flutter/architecture/Architecture"
             ],
             [
               "Change Notifier",
-              "/flutter/Change Notifier"
+              "/flutter/architecture/ChangeNotifier"
             ],
             [
               "Dependency Injection",
-              "/flutter/Dependency Injection"
+              "/flutter/architecture/DependencyInjection"
             ],
             [
               "State Notifier",
-              "/flutter/State Notifier"
+              "/flutter/architecture/StateNotifier"
             ]
           ]
         ],
         [
           "Code Standard",
-          "/flutter/Code Standard"
+          "/flutter/CodeStandard"
         ],
         [
           "Install",
@@ -200,7 +200,7 @@
             ],
             [
               "Sawyer Tutorials",
-              "/tiborg/Tiborg Tutorials"
+              "/tiborg/TiborgTutorials"
             ],
             [
               "MoveIt",
@@ -217,7 +217,7 @@
             ],
             [
               "Qiborg Tutorials",
-              "/qiborg/Qiborg Tutorials"
+              "/qiborg/QiborgTutorials"
             ]
           ]
         ],
@@ -226,11 +226,11 @@
           [
             [
               "Organization",
-              "/system/System Organization"
+              "/system/SystemOrganization"
             ],
             [
               "Requirements",
-              "/system/System Requirements"
+              "/system/SystemRequirements"
             ],
             [
               "Speech",
@@ -242,15 +242,15 @@
             ],
             [
               "Speech App",
-              "/system/speech/Speech App"
+              "/system/speech/SpeechApp"
             ],
             [
               "Control Panel",
-              "/system/Control Panel"
+              "/system/ControlPanel"
             ],
             [
               "Control UI",
-              "/system/Control UI"
+              "/system/ControlUI"
             ],
             [
               "Faces",
