@@ -1,0 +1,156 @@
+## System Requirements
+
+Here is a list of the different system components and their design requirement specification:
+
+### Vision
+- Detects a table with blocks on it, and publishes the blocks it sees
+- Understands persistence of blocks, and only publishes blocks if they haven't changed between frames
+- Detects blocks to be in three separate areas on the table. (Should work for all games we are currently working with)
+- Detects hands
+- Expects a table
+- Should be able to be tested in simulation
+
+#### Block Game Vision
+- Expects there to be 9 blocks of three colors and shapes: Red, Blue, Purple; Square, Triangle, Circle
+
+#### Colored Trails Vision
+- Detects there to be a map in the center of colored squares in a 4x4 grid
+- Detects 4 different colors: Red, Blue, Purple, Black
+- Detects 4 squares on each side at the beginning of a round
+
+#### Face Detection
+- Detects a face in the field of view of the camera when the head is facing forward or 45 degrees to the left or right
+- Expects a face to contain a round oval shape with two eyes, and a mouth which could be covered by a mask or not
+
+### Manipulation
+- Manipulation should be able to grab anything on the left side of the table and in the center area
+- Manipulation should be able to plan paths that lead straight to the block and don't require a large configuration change from the arm-at-rest position
+- Manipulation should be able to detect anomolies in grasping the block, and perform a retry
+- A retry might require a new view of the table, so the arm must move out of the way to get a new vision reading
+- Manipulation should be able to grasp a block the first time 85% of the time
+- Manipulation should be able to graph a block on the first time or the retry 95% of the time
+- It should be able to be tested by having it grab a single color / shape block, or grab all blocks on the table.
+
+### Game UI
+The game UI should be able to show:
+- A view of the game from each player's perspective as it currently stands
+- The player's point history
+- Both player's cumulative scores
+- The game history
+- The actions available
+
+In simulation it should allow:
+- The player to play any action that is available
+- The player to choose when to move onto the next round
+
+In real environments:
+- It should be able to show the intended action of the agent before the corresponding state actually changes. (Useful for Human as AI)
+
+
+### Game Server
+The game server keeps track of the game logic and the verified game state.
+It is able to start each of the games and keep track of multiple games at once.
+It does not depend on ROS
+
+#### Game State Verifier
+- In sim, actions are taken at face value and verified immediately, agents have to also accept to move to the next round (to give them time to look at results of the prior round)
+- In no sim, actions are either 
+  - 1. taken as a indication of what the agent wants to do, which must then be verified by receiving a verification message
+  - 2. taken from a state reading message from the vision system
+  - As such, the user will be configured to one of the two alternatives when the game begins
+  - The next game round starts when the verifier can verify that the first state of the next round is the state being observed by the vision system
+
+### System Control
+System control should be able to:
+- Start any known process on any computer
+- Keep track of the process state (start, stopped)
+- Keep track of the last bit of output for each process (100 lines)
+
+#### UI
+The system control UI should:
+- Show all the computers and whether it is connected to them
+- Be able to connect to the computer, or timeout and say the computer is not reachable
+- Update the workspace on a remote computer including doing a catkin_make
+- Update the flutter apps on a remote computer, including doing a flutter upgrade, and building release versions of the apps
+- When a computer is selected:
+  - It should show all the processes on that computer and what state they are in (start, stopped, intera, not-intera)
+  - When a process is selected:
+    - It should show the last bit of output for that process (100 lines at least)
+    - Be able to start or stop the process
+    - Be able to see errors with processes
+    - Controls related to that process should be shown in a pane next to the output pane
+    - Eventually a slider to adjust pane sizes would be good. (see this [flutter issue](https://github.com/flutter/flutter/issues/64768))
+- It should show what the current state of the features is on the ROS masters (intera, local) (in a sidebar)
+  - Features include: Personal Touch, Strategic Communication, Sim, and all of the Proficiency Recognizers 
+
+### Communication
+The communication system has three parts:
+#### Faces
+- Faces should be able to show the animations created using [rive](https://rive.app) on sawyer's account
+- Faces should transition between animations in response to changes on ros topics and ros services.
+- Faces should be able to speak in sync with audio
+ 
+#### Speech App
+The speech app should:
+- Listen for speech from the user when the button on the app is held down (like a walkie talkie).
+- Listen for speech even when the button is not held down (if speech is close to a known phrase sawyer will indicate to them that he thought he heard you talking, but you didn't hold down the button properly)
+- Only send speech that is a match on the verified speech topic.
+- TODO: We need to specify more continuous and less-well-formed speech requirements
+#### Speech Server
+- Do we even have this anymore, or should we put everything into the app?
+
+
+### Agent
+The agent should:
+- Be able to run in sim or real
+- Be able to run against itself, or against another agent via ROS or without ROS
+- Be able to communicate actions and speech
+- Be able to wait for the new game state (or action of the other player) -- eventually will be acting directly on the new game state, but also we should let it introspect on what actions might have caused those changes in state.
+- Be able to go to a previous state (undo) -- eventually
+  
+#### Agent UI
+The Agent UI is used for debugging and analyzing strategies, not for acutally running the agent. Running the agent should be done eventually through the system control module
+The agent UI is only used for the dart version of the agent.
+It should be able to:
+- Generate the Convex Hull graphs for any game and agent combination
+- Show/graph the performance of the agent in agent vs agent simulations
+- Show a log of message in agent-vs-agent simulations
+
+
+### User Study Sign Up
+We would like an easy way to handle user study sign-ups including prerequisites and other conditional requirements for signing up.
+An initial thought I had was:
+- A user facing schedule like UI with highlighted timeslots that are available
+  - When they select a time they will get an email asking them to confirm some qualifications such as they don't know the other person signed up for the time slot.
+  - They will get a reminder email before the study (probably have a dropdown for them to select how far in advance they want this email)
+  - Both emails will have the location and map of where to find our lab
+  - Potentially look into somehow giving them a link to add it to their calendar.
+- A organizer UI which:
+  - Lets us create a study
+  - Lets us put the times that we are available and our preference for that time slot
+  - Reminds us when we need to be in the lab for a user study
+  - Figures out which study organizers to assign to which timeslots based on their preferences and the amount of time they can work per week
+  - Lets us set the number of study participants needed for each condition
+  - Lets us specify multiple conditions with different numbers of people required for each condition
+  - Randomly assigns different study participants to different conditions, based on the number of people who signed up for that timeslot
+  - Gives each study participant a unique id
+  - Lets us see the user's name, email, and unique id
+  - Let's us clear the user-sensitive information after the study is done, just preserving the unique ids and conditions and configuration
+- A server that keeps track of the study configuration, and user sign ups.
+I'm thinking of doing both the server and UI in dart/flutter. We can use byu domains for a free domain and server. We can compile the dart program ahead of time for the server, and deploy the site there. We could also deploy the site on gitlab/github, and just have it access the byu server for the backend. The alternative is to use firebase as a backend, which would also be a good option, and we would have to worry less about server, since all we really need as far as a server is the database. Firebase works on flutter-web, and we can do firebase firestore for the database. However, it would be harder to debug on desktop(no-firebase-support) or web(no-hot-reload-support), unless you have a Macbook(supports both), so you might need to debug on mobile(supports both). 
+
+Some things to think about:
+What format should we store the user data / study config data?
+Is there a good calendar UI package that we can use to do something like show hours of a day? (We really are interested in hour or 30-minute increments over a period of about 2 weeks)
+What are the different config options that would be useful?
+What happens if someone doesn't show up at the time they signed up for?
+
+### Post-Game Analysis
+A User Interface to look at the games in our colored block format. I've created and used it, but I think we can augment it with more sophisticated analysis, and standardize our game data / user data report format.
+
+
+
+
+
+
+

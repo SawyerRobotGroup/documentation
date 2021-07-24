@@ -1,0 +1,43 @@
+# Explaination of Our Framework for Colored Trails
+
+# GUI
+
+The gui for the game is implemented in dart/flutter. It uses a seeded random number generator to generate the game board and players hands and simple logic to test the validity of the scenario.
+
+## Pages
+
+- Home Page
+
+- Server Connection
+
+- Game Page
+
+### Home Page
+
+![HomePage](/img/colored_trails_home_page.jpg)
+
+This page is used to launch the GUI in one of three modes: degub, player one, and player two.
+Debug mode allows the game to be played in a tabbed window for simple debugging and self-human play, while either of the player options simply starts the GUI for that player.
+
+### Server Connection
+
+![Connection](/img/Colored_trails_connection.jpg)
+
+This page is used to connect to the server by choosing the appropriate computer name and port number so that users may play on any computer.
+
+### Game Page
+
+![Colored Trails](/img/ColoredTrails.png)
+
+This is the page where the acutal game is played and consitis of 4 panes.
+
+- Score Pane
+- Game Pane
+- Action Pane
+- Chat Pane
+
+# Backend
+
+Implemented in Python3, the backend is a server using socketio and eventlet. In the backend, new scenarios are generated and verified for validity, actions are recieved and precessed, and game phases are advanced. The Backend can handle multiple games at a time as different games are stored via a 4 letter gamecode which is used for all processes and actions for the games.
+
+see [automatic mode](games/colored_trails/Automatic Mode.md) or [manual mode](games/colored_trails/Manual Mode.md) for more detailed information

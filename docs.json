@@ -1,0 +1,23 @@
+{
+  "name": "Sawyer Robot Group",
+  "theme": "#ab47bc",
+  "favicon": "/icon.svg",
+  "logo": "/icon.svg",
+  "sidebar": [
+    [
+      "Overview",
+      "/index"
+    ],
+    [
+      "OnBoarding",
+      "/OnBoarding"
+    ],
+    [
+      "Setup",
+      [
+        "Linux",
+        "/linux/Linux"
+      ]
+    ]
+  ]
+}

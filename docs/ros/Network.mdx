@@ -1,0 +1,33 @@
+## ROS Networking
+
+Setting up a ROS network of computers is probably one of the hardest things to do, mostly because it is hard to troubleshoot networking errors.
+
+There are a few environment variables you should know about:
+
+* ROS_MASTER_URI - this is the http://network_hostname_or_ip_address:11311 address that ROS should look for a roscore master on
+  * If developing locally this should be http://localhost:11311
+  * If wanting to connect to Tiborg it should be http://sawyer.local:11311
+  * If wanting to connect to Qiborg it should be http://qiborg-wireless.cs.byu.edu:11311
+* ROS_HOSTNAME - this should not be used
+  * If it is set (check by running `echo $ROS_HOSTNAME`) then unset it like so `unset ROS_HOSTNAME`.
+* ROS_IP - this should be set to your IP address that matches this pattern: 192.168.36.xxx
+  
+The reason you use ROS_HOSTNAME or ROS_IP is because the hostname reported by `hostname` does not always resolve to the correct IP address or can be found by other computers, 
+so you have to explicitly tell ROS what IP or hostname that other computers should try to connect to when they want to set up a connection to a node running on your computer.
+
+Symptoms of network problems:
+* `rostopic list` does not work
+  * Check to make sure that a roscore is running and your ROS_MASTER_URI is pointing to the machine that runs the roscore
+* `rostopic echo /some_topic` does not work
+  * Check to make sure the other computer can connect to yours.
+    * Try pinging your computer
+    * Make sure your ROS_IP is set properly
+  * Check that your computer is getting the right hostname to connect to.
+    * Run `roswtf` and see if you have errors around resolving hostnames
+      * Make sure the computer running roscore is reporting it's hostname properly via ROS_HOSTNAME, ROS_IP, or `hostname`
+
+
+The `./intera.sh` script in `sawyer_ws` typically sets up the environment variables on your machine in a new shell to connect to sawyer.
+It will however not work with Qiborg, though we could create a script like that.
+But that is all that it does, other than spawning a new shell with those environment variables it changes the prompt up a bit.
+A common issue is that someone forgets to run the intera script, and then all the ros nodes fail to connect to the appropriate roscore on sawyer.

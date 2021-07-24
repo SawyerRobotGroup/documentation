@@ -1,0 +1,61 @@
+## What is BlockMover?
+
+The BlockMover script is used for instructing robots to move the blocks on the table.
+
+## Setting up BlockMover
+
+BlockMover expects the robot's manipulation and vision to have already been launched. It also expects that a planning scene has already been set up.
+
+Specify which robot you are using BlockMover with by setting the rosparam 'robot' to either 'Fetch' or 'Sawyer'
+
+At the time of writing, there is a script called BlockMoverLauncher that can be used with rosrun to start block mover, but it uses a hard coded scene, requires vision and manipulation to be running, and the user needs  to uncomment the code for the robot to set the rosparam to.
+
+## Table positions
+
+BlockMover uses a position system to describe the locations of blocks on the table. The position is specified by a Pose2D message. The X and Y should both be a value between 0 and 1. For example, from the player's view, (0,0) is the bottom left corner, (1,0) is the bottom right corner, and (1,1) is the top right corner.
+
+## How to use BlockMover
+
+BlockMover launches several simple action servers, and listens on several topics. Publish a message on one of those topics with "/goal" added to the end to have the robot perform the associated action.
+
+Below are descriptions of each of the actions that can be performed.
+
+## Move a block to a position
+
+The robot will grab a specified block on the table, and move it to a specified location.
+
+Listens on topic: /block_mover/move_block_to_pos
+
+Message type: MoveBlock.action (goal)
+
+## Move a block to a side of the table
+
+The robot will grab a specified block on the table, and move it to an open position on a specified side of the table.
+
+Listens on topic: /block_mover/move_block_to_side
+
+Message type: MoveBlockToSide.action (goal)
+
+## Move a block in a position
+
+The robot will grab a block in a specified position on the table, and move it to another specified position on the table.
+
+Listens on topic: /block_mover/move_block_in_pos
+
+Message type: MoveBlockInPos.action (goal)
+
+## Move a block in a position to a side of the table
+
+The robot will grab a block in a specified position on the table, and move it to an open position on a specified side of the table.
+
+Listens on topic: /block_mover/move_block_in_pos_to_side
+
+Message type: MoveBlockInPosToSide.action (goal)
+
+## Set up the block game
+
+Arranges the blocks in the starting position of the Block Game.
+
+Listens on topic: /block_mover/set_up_block_game
+
+Message type: SetUpBlockGame.action (goal)
