@@ -1,0 +1,70 @@
+# Overview
+
+AI - AI is the gamemode where an AI gainst another AI.
+
+The system to play with the physical robot is described in [system requirements](/system/System Requirements.md)
+
+## Submodes
+
+- Strategy Communication
+
+- No Communication
+
+# Strategy Communication
+
+During this mode, AIs will send proposals of strategy
+
+# No Communication
+
+During this mode, AIs will not send any proposals of strategy at all.
+
+## Game Phases
+
+- Negotiation Proposal
+
+- Set Up
+
+- Take Actions
+
+- Scoring
+
+### Phase Explaination
+
+#### Negotiation Proposal
+
+Currently all negotiations need to be made before the game is set up. This is something that will be eliminated with the new updates of continuous speech though.
+
+To propose a negotiation, an AI can send or more of the listed speech acts shown below.
+
+![Speech Acts](/img/speech_acts.png)
+
+#### Set Up
+
+To set up the game, all the blocks are placed in the play area. On the GUI, this is done automatically when a round finishes.
+
+#### Take Actions
+
+During each round, AIs take turns claiming a block until each player has 3 blocks. When they claim a block, it is placed in their play area.
+
+#### Scoring
+
+Once 3 blocks have been claimed, they are scored automatically and the score is added to their total score.
+
+Scoring is calculated by adding the values of each of the blocks claimed. If the blocks make a valid set, the sum is then added to the total score, if it is an invalid set, `1/4` of the sum is subtracted from the total score.
+
+In **The Block Game** there are 4 main types of cooperation, as depicted below:
+
+- Dysfunctional
+- Domination
+- Aloof
+- Efficient
+
+Dysfunctional Cooperation is when both players lose money during the round meaning that they prevented each other from getting valid sets.
+
+Domination is when one player gets significantly more money than the other for multiple rounds.
+
+Aloof Cooperation is when both players get money, but it is not the optimum amount.
+
+Efficient Cooperation is when both players manage to cooperate to get the most money possible.
+
+![Scoring](/img/game_scoring.png)

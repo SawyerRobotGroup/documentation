@@ -1,0 +1,67 @@
+## State Notifier architecture
+
+StateNotifier can be used in a variety of ways.
+Following are my recommendations to keep our code organized:
+
+For the state class use freezed.
+For the dependency injection use riverpod.
+
+For local state (that nothing else needs to worry about) use flutter_hooks
+
+Use hooks_riverpod for accessing the StateNotifierProvider in a widget.
+Use computed for properties that are derived.
+
+A simple outline is as follows:
+
+```dart
+// in /state/my_app_state.dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:riverpod/riverpod.dart';
+import 'package:state_notifier/state_notifier.dart';
+part 'my_app_state.freezed.dart';
+
+final myAppStateProvider = StateNotifierProvider((ref) => MyAppState(ref));
+
+class MyAppState extends StateNotifier<AppState>() {
+  const MyAppState(this.ref) : super(AppState.initial());
+  final ProviderReference ref;
+
+  /// Methods
+  void changeName(String name) {
+    state = state.copyWith(name: name);
+  } 
+}
+
+@freezed
+abstract class AppState with _$AppState {
+  const factory AppState({@required String name});
+  factory AppState.initial() => AppState(name: 'Start') 
+}
+
+// In your ui somewhere
+import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'state/my_app_state.dart'; // Wherever you put your state
+
+class MyWidget extends HookWidget {
+  @override
+  void build(BuildContext context){
+    final state = useProvider(myAppStateProvider.state);
+    final provider = useProvider(myAppStateProvider);
+    final textEditor = useTextEditingController();
+    return Column(
+      children: [
+        Text(state.name),
+        RaisedButton(
+          child: Text('Set name'), 
+          onPressed: () => provider.changeName(textEditor.value),
+        ),
+        TextField(
+          controller: textEditor,
+        ),
+      ],
+    );
+  }
+}
+```

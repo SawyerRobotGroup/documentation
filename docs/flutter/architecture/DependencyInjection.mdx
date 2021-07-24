@@ -1,0 +1,8 @@
+## What is dependency injection
+
+Dependency injection is a way of accessing dependencies throughout the app.
+
+For example you have some state that needs to be shared with the entire application, or you have
+some state that needs to be shared between a few widgets.
+
+The simplest form of dependency injection is to just pass in parameters.

@@ -1,0 +1,152 @@
+## Overview
+
+This is a project for controling all of the subsystems needed to play [the block game](games/Block Game.md) in user studies as well as for displaying the current game state.
+
+The code for this project is in: `game/control_panel` and is implemented in dart/flutter. It is soon to be deprecated adn replaced by `game/control_server` and `game/ui/block_game`
+
+---
+
+## Pages
+
+- Home Page
+
+- Control Page
+
+- User Study Page
+
+### Home Page
+
+![HomePage](/img/home_Page_control_panel.png)
+
+This page is used to connect to the server by choosing the appropriate computer name and port number so that users may play on any computer.
+
+### Control Page
+
+![Colored Trails](/img/control_page_control_panel.png)
+
+This is the page where all the subsystems for the block game can be initialized and the game is started.
+
+### User Study Page
+
+![Colored Trails](/img/user_study_page_control_panel.png)
+
+This is the page where the acutal game can be played in sim mode as well as where the current game state is displayed during physical games.
+
+---
+
+### Controls
+
+- Vision Subsystem
+- Faces
+- Mic
+- Utils
+- Manipulation
+- Block Game demo
+
+<!-- ### Communicates with: -->
+
+<!-- TODO -->
+
+### Topics Subscribed To:
+
+#### GameTopic
+
+- name: 'verified_game_state',
+- type: '/common_msgs/GameState',
+
+##### VerifiedSpeechTopic
+
+- name: 'verified_speech',
+- type: '/common_msgs/ChatMessage',
+
+#### ScoreTopic
+
+- name: 'round_score',
+- type: '/common_msgs/Score',
+
+#### RunningScoreTopic
+
+- name: 'running_score',
+- type: 'common_msgs/Score',
+
+#### commandTopic
+
+- name: 'commands',
+- type: 'common_msgs/Command',
+
+#### statusTopic
+
+- name: 'status',
+- type: 'common_msgs/Status',
+
+#### gameTurnTopic
+
+- name: 'game_turn',
+- type: 'common_msgs/GameTurn',
+
+#### playerMoveTopic
+
+- name: 'player_move',
+- type: 'common_msgs/PlayerMove',
+
+#### currentRoundTopic
+
+- name: 'current_round',
+- type: 'common_msgs/CurrentRound',
+
+#### faceTopic
+
+- name: 'robot/face_compressed',
+- type: 'sensor_msgs/CompressedImage',
+
+#### lookAtTopic
+
+- name: 'eyes/method',
+- type: 'common_msgs/LookAt',
+
+#### gazeAtTopic
+
+- name: 'gaze',
+- type: 'common_msgs/GazeAt',
+
+#### chatStatusTopic
+
+- name: 'chat/status',
+- type: 'common_msgs/ChatStatus',
+
+#### attentionTopic
+
+- name: 'attention',
+- type: 'common_msgs/Attention',
+
+### Services
+
+#### \_moveAwayClient
+
+- name: 'arm/move/away'
+- type: 'common_msgs/EmptyCommand'
+
+#### \_moveHomeClient
+
+- name: 'arm/move/home'
+- type: 'common_msgs/EmptyCommand'
+
+#### \_openGripperClient
+
+- name: 'gripper/open'
+- type: 'common_msgs/EmptyCommand'
+
+#### \_closeGripperClient
+
+- name: 'gripper/close'
+- type: 'common_msgs/EmptyCommand'
+
+---
+
+### To run from sawyer_ws:
+
+- `./start_control_panel.sh`
+
+### To run for user study:
+
+- `./start_user_study.sh`
