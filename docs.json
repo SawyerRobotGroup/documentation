@@ -1,8 +1,8 @@
 {
   "name": "Sawyer Robot Group",
   "theme": "#ab47bc",
-  "favicon": "/ai.png",
-  "logo": "/ai.png",
+  "favicon": "/img/ai.png",
+  "logo": "/img/ai.png",
   "sidebar": [
     [
       "Overview",
