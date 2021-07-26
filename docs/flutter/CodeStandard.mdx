@@ -20,11 +20,7 @@ However, some problems must be corrected manually. Please do that. After making 
 ### Creating a new project
 When creating a new project, be sure to copy the `analysis_options.yaml` over from one of the existing projects to set up the code standard lints.
 
-Or run:
-* `pub global activate abide`
-* `abide update`
-If using abide to create the `analysis_options.yaml` from scratch, there are a couple of conflicting styles that the analyzer can check for.
-You will have to comment out the lines that are conflicting or that we have chosen not to adhere to.
+Make sure to add the project to the `melos.yaml` in `saywer_ws`
 
 ### Updating the lints
 If dart updates their linter to add new rules we will need to choose whether they are rules we would like to enable or not.
@@ -32,8 +28,4 @@ My recommendation is to enable more rather than fewer.
 
 To see the full current list of lint_rules see this [reference](https://dart-lang.github.io/linter/lints/options/options.html)
 
-Or run `abide update`. This will update the `analysis_options.yaml` with all new rules. 
-* Make sure you have abide installed, and are in the project directory
-* `pub global activate abide`
-* `abide update`
-Then see if there are any new problems that abide has found, and choose whether to fix them, or comment out the respective line in `analysis_options.yaml`
+Add any new rules to the `analysis_options.yaml` in `sawyer_ws`, and then run `./update_analysis.sh`.

@@ -5,7 +5,7 @@ Anyone can create a package and upload it to [pub.dev](https://pub.dev).
 We use several packages of our own creation, as well as others.
 
 There is lots of good documentation on [pub.dev](https://pub.dev) for each package.
-You can usually also browse the API reference.
+You can usually also browse the API reference from a link on the pub.dev page.
 
 ## Usage
 
@@ -28,22 +28,13 @@ TODO: Add in common_widgets and common_utils
 dependencies:
   flutter:
     sdk: flutter
-  provider: any
   riverpod: any
   flutter_hooks: any
   dartx: any
-  widgetx: any
-  rxdart: any
-  basics: any
-  dartz: any
-  intl: any
   async: any
-  tuple: ^1.0.3
-  fluttertoast: ^4.0.0
-  flutter_rosutils: any
+  dartos: any
   json_annotation: any
   freezed_annotation: any
-  pedantic: ^1.8.0
 
 dev_dependencies:
   flutter_test:
@@ -51,14 +42,6 @@ dev_dependencies:
   json_serializable: any
   build_runner: any
   freezed: any
-  dshell: any
-  derry: any
-  fvm: any
-
-dependency_overrides:
-  roslib:
-    git:
-      url: https://github.com/TimWhiting/roslib
 
 scripts:
   recreate:
@@ -81,8 +64,7 @@ scripts:
 
 ## Common Packages Recommended for use in all new projects, and integration into old projects
 
-- [provider](https://pub.dev/packages/provider)
-- [roslib](https://pub.dev/packages/roslib)
+- [dartros](https://pub.dev/packages/dartros)
 
 ## New Packages To Start Using
 
@@ -90,14 +72,10 @@ Currently we aren't using everywhere, but probably should use (in order of usefu
 
 - [dartx](https://pub.dev/packages/dartx)
 - [flutter_hooks](https://pub.dev/packages/flutter_hooks)
-- [dartros](https://pub.dev/packages/dartros)
-- [xcontext](https://pub.dev/packages/xcontext)
 - [basics](https://pub.dev/packages/basics)
-- [widgetx](https://pub.dev/packages/widgetx)
 - [derry](https://pub.dev/packages/derry)
 - [freezed](https://pub.dev/packages/freezed)
 - [breakpoint](https://pub.dev/packages/breakpoint)
-- [wiredash](https://pub.dev/packages/wiredash)
 - [flutter_launcher_icons](https://pub.dev/packages/flutter_launcher_icons) -- however, this [fork](https://github.com/personalizedrefrigerator/flutter_launcher_icons) is currently needed to generate icons for web
 
 ## Packages to explore
@@ -105,31 +83,25 @@ Currently we aren't using everywhere, but probably should use (in order of usefu
 - [fluttercommunity packages](https://pub.dev/publishers/fluttercommunity.dev/packages)
 - [textstyle_extensions](https://pub.dev/packages/textstyle_extensions)
 - [rnd](https://pub.dev/packages/rnd)
-- [cubit](https://pub.dev/packages/cubit)
-- [flutter_cubit](https://pub.dev/packages/flutter_cubit)
 
 ## Custom Packages
 
-- [dartros](https://pub.dev/packages/dartros) (Still a work in progress)
-- [flutter_rosutils](https://pub.dev/packages/flutter_rosutils) Some helpers for the roslib library to keep state of flutter application in sync with what is happening in ROS
+- [dartros](https://pub.dev/packages/dartros) Tim created this package to bring ROS to dart
 - [dart_statistics](https://pub.dev/packages/dart_statistics) Used in the proficiency assessment work, with the mouse-cheese world flutter application
 
 ## Sawyer Faces
 
 - [flare_flutter](https://pub.dev/packages/flare_flutter) (Animation framework)
+Need to move faces and the runtime to the rive runtime (which is version 2.0 of flare)
+- [rive](https://pub.dev/packages/rive)
+- [Rive Web App](https://rive.app) (for creating the animations)
 
 ## Speech App
 
 - [googleapis](https://pub.dev/packages/googleapis)
 
-## SSharp
-
-- [socket_io](https://pub.dev/packages/socket_io)
-
 ## State Management Recommendations
 
-Use any of the following options, they each have their benefits.
-Most of what we have done is the first option. However, with mutable state it can cause bad states more frequently.
 Immutable states are highly recommended to avoid two mutations that cause inconsistent state.
 See the [freezed package](https://pub.dev/packages/freezed) for my recommendation on making states immutable.
 Also, recommended to design with the goal in mind of making illegal states unrepresentable.

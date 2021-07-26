@@ -196,15 +196,15 @@
           [
             [
               "Sawyer",
-              "/tiborg/Tiborg"
+              "/sawyer/Sawyer"
             ],
             [
               "Sawyer Tutorials",
-              "/tiborg/TiborgTutorials"
+              "/sawyer/SawyerTutorials"
             ],
             [
               "MoveIt",
-              "/tiborg/Moveit"
+              "/sawyer/Moveit"
             ]
           ]
         ],
@@ -213,11 +213,11 @@
           [
             [
               "Fetch",
-              "/qiborg/Qiborg"
+              "/fetch/Fetch"
             ],
             [
-              "Qiborg Tutorials",
-              "/qiborg/QiborgTutorials"
+              "Fetch Tutorials",
+              "/fetch/FetchTutorials"
             ]
           ]
         ],

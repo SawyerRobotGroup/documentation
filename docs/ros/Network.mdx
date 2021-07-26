@@ -6,8 +6,8 @@ There are a few environment variables you should know about:
 
 * ROS_MASTER_URI - this is the http://network_hostname_or_ip_address:11311 address that ROS should look for a roscore master on
   * If developing locally this should be http://localhost:11311
-  * If wanting to connect to Tiborg it should be http://sawyer.local:11311
-  * If wanting to connect to Qiborg it should be http://qiborg-wireless.cs.byu.edu:11311
+  * If wanting to connect to Sawyer it should be http://sawyer.local:11311
+  * If wanting to connect to Fetch it should be http://qiborg-wireless.cs.byu.edu:11311
 * ROS_HOSTNAME - this should not be used
   * If it is set (check by running `echo $ROS_HOSTNAME`) then unset it like so `unset ROS_HOSTNAME`.
 * ROS_IP - this should be set to your IP address that matches this pattern: 192.168.36.xxx
@@ -27,7 +27,5 @@ Symptoms of network problems:
       * Make sure the computer running roscore is reporting it's hostname properly via ROS_HOSTNAME, ROS_IP, or `hostname`
 
 
-The `./intera.sh` script in `sawyer_ws` typically sets up the environment variables on your machine in a new shell to connect to sawyer.
-It will however not work with Qiborg, though we could create a script like that.
-But that is all that it does, other than spawning a new shell with those environment variables it changes the prompt up a bit.
+The `./qiborg_wired.sh` script in `sawyer_ws` typically sets up the environment variables on your machine in a new shell to connect to fetch.
 A common issue is that someone forgets to run the intera script, and then all the ros nodes fail to connect to the appropriate roscore on sawyer.
