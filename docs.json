@@ -204,7 +204,7 @@
             ],
             [
               "MoveIt",
-              "/sawyer/Moveit"
+              "/sawyer/MoveIt"
             ]
           ]
         ],
