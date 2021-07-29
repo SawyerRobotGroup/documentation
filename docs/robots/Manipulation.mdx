@@ -20,42 +20,52 @@ BlockMover launches several simple action servers, and listens on several topics
 
 Below are descriptions of each of the actions that can be performed.
 
-## Move a block to a position
+### Move a block to a position
 
 The robot will grab a specified block on the table, and move it to a specified location.
 
 Listens on topic: /block_mover/move_block_to_pos
 
-Message type: MoveBlock.action (goal)
+Message type: MoveBlockAction (goal)
 
-## Move a block to a side of the table
+### Move a block to a side of the table
 
 The robot will grab a specified block on the table, and move it to an open position on a specified side of the table.
 
 Listens on topic: /block_mover/move_block_to_side
 
-Message type: MoveBlockToSide.action (goal)
+Message type: MoveBlockToSideAction (goal)
 
-## Move a block in a position
-
-The robot will grab a block in a specified position on the table, and move it to another specified position on the table.
-
-Listens on topic: /block_mover/move_block_in_pos
-
-Message type: MoveBlockInPos.action (goal)
-
-## Move a block in a position to a side of the table
-
-The robot will grab a block in a specified position on the table, and move it to an open position on a specified side of the table.
-
-Listens on topic: /block_mover/move_block_in_pos_to_side
-
-Message type: MoveBlockInPosToSide.action (goal)
-
-## Set up the block game
+### Set up the block game
 
 Arranges the blocks in the starting position of the Block Game.
 
 Listens on topic: /block_mover/set_up_block_game
 
-Message type: SetUpBlockGame.action (goal)
+Message type: SetUpBlockGameAction (goal)
+
+### Other Actions
+
+##### Move a block in a position
+
+The robot will grab a block in a specified position on the table, and move it to another specified position on the table.
+
+Listens on topic: /block_mover/move_block_in_pos
+
+Message type: MoveBlockInPosAction (goal)
+
+##### Move a block in a position to a side of the table
+
+The robot will grab a block in a specified position on the table, and move it to an open position on a specified side of the table.
+
+Listens on topic: /block_mover/move_block_in_pos_to_side
+
+Message type: MoveBlockInPosToSideAction (goal)
+
+##### Clear a position
+
+The robot will move any blocks near a certain position to the side of the table
+
+Listens on topic: /block_mover/clear_pos
+
+Message type: ClearPosActionAction (goal)
